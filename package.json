@@ -1,0 +1,17 @@
+{
+  "name": "screeps",
+  "version": "1.0.0",
+  "description": "TS script builder for Game Screeps",
+  "main": "main.js",
+  "scripts": {
+    "serve:screeps": "tsc -w --project ./screeps.com/tsconfig.json"
+  },
+  "keywords": [
+    "screeps"
+  ],
+  "author": "Francisco Santorelli",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.0.5"
+  }
+}
