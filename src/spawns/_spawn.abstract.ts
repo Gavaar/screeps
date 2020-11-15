@@ -1,20 +1,21 @@
 abstract class AbstractSpawn {
   get name(): string {
-    return this._structureSpawn.name;
+    return this.spawn.name;
   }
   get room(): IRoom {
-    return this._structureSpawn.room;
+    return this.spawn.room;
   }
   get id() {
-    return this._structureSpawn.id;
+    return this.spawn.id;
   }
 
-  private _structureSpawn: ISpawn;
+  protected spawn: ISpawn;
+
   constructor(spawn: ISpawn) {
-    this._structureSpawn = spawn;
+    this.spawn = spawn;
   }
 
-  abstract create(): number;
+  abstract run(): void;
 }
 
 export { AbstractSpawn };
