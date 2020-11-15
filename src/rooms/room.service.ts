@@ -1,5 +1,5 @@
 import { IGame } from 'src/types/game';
-import { RequiredCreeps } from 'src/creeps/creep.interface';
+import { RequiredCreeps } from '@creeps/creep.interface';
 import { energySourceService } from './energy_sources/energy_source.service';
 
 class RoomService {
@@ -10,6 +10,8 @@ class RoomService {
 
   getCreepCapacity(room: IRoom): RequiredCreeps {
     if (room.memory.creepCapacity) return room.memory.creepCapacity;
+
+    room.memory.currentCreeps = { miner: 0, collector: 0, builder: 0 }
 
     const miner = this.calculateMinersNeeded(room);
     const collector = miner * 2;

@@ -1,5 +1,5 @@
-import { CreepType } from 'src/creeps/creep.interface';
-import { roomService } from 'src/rooms/room.service';
+import { CreepType } from '@creeps/creep.interface';
+import { roomService } from '@rooms/room.service';
 import { Spawn } from './spawn';
 import { AbstractSpawn } from './_spawn.abstract';
 
@@ -13,7 +13,7 @@ class SpawnService {
 
   nextRequiredCreep(room: IRoom): CreepType | void {
     const { miner, collector, builder } = roomService.getCreepCapacity(room);
-    const { currentCreeps } = Memory;
+    const { currentCreeps } = room.memory;
 
     if (currentCreeps.miner * 2 > currentCreeps.collector && currentCreeps.collector < collector) {
       return CreepType.Collector;

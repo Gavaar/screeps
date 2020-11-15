@@ -1,5 +1,5 @@
 import { nameService } from '@common/name_creator.service';
-import { CreepType } from 'src/creeps/creep.interface';
+import { CreepType } from '@creeps/creep.interface';
 import { spawnService } from './spawn.service';
 import { AbstractSpawn } from './_spawn.abstract';
 
@@ -25,6 +25,7 @@ class Spawn extends AbstractSpawn {
     );
 
     this.room.memory.currentCreeps[type] += 1;
+    Memory.creeps[_name] = { type };
   }
 }
 

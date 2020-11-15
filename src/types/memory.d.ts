@@ -1,4 +1,4 @@
-import { CreepType, RequiredCreeps } from 'src/creeps/creep.interface';
+import { CreepType, RequiredCreeps } from '@creeps/creep.interface';
 
 declare interface IMemory {
   id: number;

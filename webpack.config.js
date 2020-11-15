@@ -12,7 +12,13 @@ module.exports = {
     filename: "main.js" // <--- Will be compiled to this single file
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js"],
+    extensions: [".ts", ".js"],
+    alias: {
+      "@creeps": path.resolve(__dirname, 'src/creeps/'),
+      "@spawns": path.resolve(__dirname, 'src/spawns/'),
+      "@rooms": path.resolve(__dirname, 'src/rooms/'),
+      "@common": path.resolve(__dirname, 'src/_common/'),
+    }
   },
   module: {
     rules: [

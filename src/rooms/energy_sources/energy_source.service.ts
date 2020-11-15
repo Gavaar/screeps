@@ -1,7 +1,5 @@
 class EnergySourceService {
   getRoomEnergySources(room: IRoom): { [id: string]: ISource } {
-    if (!room.memory.sources) Memory.sources = {};
-
     let sources = room.memory.sources;
     if (sources) return sources;
 
@@ -19,6 +17,7 @@ class EnergySourceService {
         return sources[srcId].memory.minerCapacity > sources[srcId].memory.miners;
       });
 
+    if (sourceId) room.memory.sources[sourceId].memory.miners += 1;
     return sourceId || '';
   }
 

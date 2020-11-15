@@ -1,4 +1,4 @@
-import { roomService } from 'src/rooms/room.service';
+import { roomService } from '@rooms/room.service';
 import { CreepType } from './creep.interface';
 import { AbstractCreep, CreepOptions } from './_creep.abstract';
 

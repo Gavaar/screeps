@@ -1,4 +1,4 @@
-import { energySourceService } from 'src/rooms/energy_sources/energy_source.service';
+import { energySourceService } from '@rooms/energy_sources/energy_source.service';
 import { CreepType } from './creep.interface';
 import { AbstractCreep } from './_creep.abstract';
 
