@@ -2,11 +2,13 @@ import { nameService } from '@common/name_creator.service';
 import { CMiner } from './creep_miner';
 import { CreepType } from './creep.interface';
 import { AbstractCreep } from './_creep.abstract';
+import { CCollector } from './creep_collector';
+import { CBuilder } from './creep_builder';
 
 const typeClassMap = {
   [CreepType.Miner]: CMiner,
-  [CreepType.Collector]: CMiner,
-  [CreepType.Builder]: CMiner,
+  [CreepType.Collector]: CCollector,
+  [CreepType.Builder]: CBuilder,
 }
 
 class CreepService {

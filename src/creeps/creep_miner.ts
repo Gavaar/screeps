@@ -8,7 +8,7 @@ class CMiner extends AbstractCreep<ICMinerMemory> {
   run() {
     const src = this.getMiningSrc();
     const harvesting = this.creep.harvest(src);
-    if (harvesting === ERR_NOT_IN_RANGE) this.creep.moveTo(src.pos);
+    if (harvesting === ERR_NOT_IN_RANGE) this.creep.moveTo(src.pos, { visualizePathStyle: {} });
     this.beforeDestroy();
   }
 

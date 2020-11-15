@@ -19,6 +19,21 @@ class RoomService {
     return room.memory.creepCapacity;
   }
 
+  getRoomStorages(room: IRoom): (ISpawn | IContainer)[] {
+    return room.find<ISpawn | IContainer>(FIND_MY_STRUCTURES)
+      .filter(s => s.store)
+      .sort((sa, sb) => sb.store.getFreeCapacity() - sa.store.getFreeCapacity());
+  }
+
+  getDroppedResources(room: IRoom): IResource[] {
+    return room.find<IResource>(FIND_DROPPED_RESOURCES)
+      .sort((sa, sb) => sb.amount - sa.amount);
+  }
+
+  getConstructionSites(room: IRoom): IConstructionSite[] {
+    return room.find<IConstructionSite>(FIND_CONSTRUCTION_SITES);
+  }
+
   private calculateMinersNeeded(room: IRoom): number {
     const enSrcs = energySourceService.getRoomEnergySources(room);
     // maximum energy per tick extractable to not oversaturate the source

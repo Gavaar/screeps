@@ -23,4 +23,4 @@ abstract class AbstractCreep<T> {
   abstract run(): void;
 }
 
-export { AbstractCreep };
+export { AbstractCreep, CreepOptions };
