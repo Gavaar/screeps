@@ -35,7 +35,9 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
       this.memory.target = roomService.getDroppedResources(this.creep.room)[0].id;
     }
 
-    return Game.getObjectById<IResource>(this.memory.target);
+    const energy = Game.getObjectById<IResource>(this.memory.target);
+    if (!energy) this.memory.target = '';
+    return energy;
   }
 
   private collect(): void {

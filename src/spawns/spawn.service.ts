@@ -12,7 +12,7 @@ class SpawnService {
   }
 
   nextRequiredCreep(room: IRoom): CreepType | void {
-    const { miner, collector, builder } = roomService.getCreepCapacity(room);
+    const { miner, collector, builder, upgrader } = roomService.getCreepCapacity(room);
     const { currentCreeps } = room.memory;
 
     if (currentCreeps.miner * 2 > currentCreeps.collector && currentCreeps.collector < collector) {
@@ -21,7 +21,7 @@ class SpawnService {
       return CreepType.Miner;
     } else if (currentCreeps.builder < builder) {
       return CreepType.Builder;
-    } else {
+    } else if (currentCreeps.upgrader < upgrader) {
       return CreepType.Upgrader;
     }
   }

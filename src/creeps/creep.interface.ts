@@ -9,6 +9,7 @@ interface RequiredCreeps {
   [CreepType.Miner]: number,
   [CreepType.Collector]: number,
   [CreepType.Builder]: number,
+  [CreepType.Upgrader]: number,
 }
 
 export { CreepType, RequiredCreeps }
