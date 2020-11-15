@@ -2,6 +2,7 @@ enum CreepType {
   Miner = 'miner',
   Collector = 'collector',
   Builder = 'builder',
+  Upgrader = 'upgrader',
 }
 
 interface RequiredCreeps {

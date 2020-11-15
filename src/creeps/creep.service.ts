@@ -3,11 +3,13 @@ import { CreepType } from './creep.interface';
 import { AbstractCreep } from './_creep.abstract';
 import { CCollector } from './creep_collector';
 import { CBuilder } from './creep_builder';
+import { CUpgrader } from './creep_upgrader';
 
 const typeClassMap = {
   [CreepType.Miner]: CMiner,
   [CreepType.Collector]: CCollector,
   [CreepType.Builder]: CBuilder,
+  [CreepType.Upgrader]: CUpgrader,
 }
 
 class CreepService {

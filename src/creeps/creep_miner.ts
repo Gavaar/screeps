@@ -24,6 +24,7 @@ class CMiner extends AbstractCreep<ICMinerMemory> {
     if (this.creep.ticksToLive === 1) {
       this.creep.room.memory.currentCreeps[this.type] -= 1;
       this.creep.room.memory.sources[this.creep.memory.miningSite].memory.miners -= 1;
+      delete Memory.creeps[this.name];
     }
   }
 }

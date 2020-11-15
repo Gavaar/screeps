@@ -10,6 +10,9 @@ abstract class AbstractCreep<T> {
   get memory(): T {
     return this.creep.memory;
   }
+  get room(): IRoom {
+    return this.creep.room;
+  }
 
   abstract type: CreepType;
 

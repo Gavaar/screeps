@@ -1,6 +1,7 @@
 import { IGame } from 'src/types/game';
 import { RequiredCreeps } from '@creeps/creep.interface';
 import { energySourceService } from './energy_sources/energy_source.service';
+import { roadService } from './roads/road.service';
 
 class RoomService {
   getRooms(): IGame['rooms'] {
@@ -11,13 +12,14 @@ class RoomService {
   getCreepCapacity(room: IRoom): RequiredCreeps {
     if (room.memory.creepCapacity) return room.memory.creepCapacity;
 
-    room.memory.currentCreeps = { miner: 0, collector: 0, builder: 0 }
+    room.memory.currentCreeps = { miner: 0, collector: 0, builder: 0, upgrader: 0 }
 
     const miner = this.calculateMinersNeeded(room);
     const collector = miner * 2;
-    const builder = 1;
+    const builder = miner;
+    const upgrader = room.controller.level;
 
-    room.memory.creepCapacity = { miner, collector, builder }
+    room.memory.creepCapacity = { miner, collector, builder, upgrader }
     return room.memory.creepCapacity;
   }
 
@@ -33,16 +35,28 @@ class RoomService {
   }
 
   getConstructionSites(room: IRoom): IConstructionSite[] {
-    return room.find<IConstructionSite>(FIND_CONSTRUCTION_SITES);
+    const sites = room.find<IConstructionSite>(FIND_CONSTRUCTION_SITES);
+    if (!sites.length) {
+      const paths = energySourceService.getPathFromStoresToSources(room);
+      roadService.setConstructionSites(room, paths);
+    }
+    return sites;
+  }
+
+  setConstructionSite(room: IRoom, pos: IPosition, type: string): number {
+    return room.createConstructionSite(pos, type);
   }
 
   private calculateMinersNeeded(room: IRoom): number {
     const enSrcs = energySourceService.getRoomEnergySources(room);
     // maximum energy per tick extractable to not oversaturate the source
-    const workCapacityPerTick = Object.values(enSrcs).reduce((t, e) => t += e.energyCapacity, 0) / 600;
+    const workCapacityPerTick = Object.values(enSrcs).reduce((t, e) => t += e.energyCapacity, 0) / (300 );
     // room capacity - required at least 1 move
     const unitWorkCapacity = Math.floor((room.energyCapacityAvailable - 50) / 100);
-    return workCapacityPerTick / unitWorkCapacity;
+    const maxWorkingMiners = workCapacityPerTick / unitWorkCapacity;
+    const actualWorkingSpaces = Object.values(enSrcs).reduce((t, e) => t += e.memory.minerCapacity, 0);
+
+    return maxWorkingMiners > actualWorkingSpaces ? actualWorkingSpaces : maxWorkingMiners;
   }
 }
 

@@ -19,3 +19,6 @@ declare const ERR_NOT_IN_RANGE: -9;
 
 // resources
 declare const RESOURCE_ENERGY: string;
+
+// structures
+declare const STRUCTURE_ROAD: string

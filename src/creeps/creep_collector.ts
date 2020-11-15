@@ -11,17 +11,20 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
 
   constructor(creep: ICreep<ICCollectorMemory>, opts: CreepOptions) {
     super(creep, opts);
-    this.memory.state = 'collecting';
+    if (!this.memory.state) this.memory.state = 'collecting';
   }
 
   run() {
     if (this.memory.state === 'collecting') this.collect();
     else this.transfer();
+
+    this.beforeDestroy();
   }
 
   private getStructureTarget(): ISpawn | IContainer {
     if (!this.memory.target) {
-      this.memory.target = roomService.getRoomStorages(this.creep.room)[0].id;
+      const emptiestStorage = roomService.getRoomStorages(this.creep.room)[0];
+      this.memory.target = emptiestStorage.id;
     }
 
     return Game.getObjectById<ISpawn | IContainer>(this.memory.target);
@@ -55,7 +58,14 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
 
   private toggleState() {
     this.memory.target = '';
-    this.memory.state = this.memory.state === 'transferring' ? 'collecting' : 'transferring';
+    this.memory.state = (this.memory.state === 'transferring' ? 'collecting' : 'transferring');
+  }
+
+  private beforeDestroy() {
+    if (this.creep.ticksToLive === 1) {
+      this.creep.room.memory.currentCreeps[this.type] -= 1;
+      delete Memory.creeps[this.name];
+    }
   }
 }
 

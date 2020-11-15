@@ -1,3 +1,5 @@
+import { spawnService } from '@spawns/spawn.service';
+
 class EnergySourceService {
   getRoomEnergySources(room: IRoom): { [id: string]: ISource } {
     let sources = room.memory.sources;
@@ -19,6 +21,17 @@ class EnergySourceService {
 
     if (sourceId) room.memory.sources[sourceId].memory.miners += 1;
     return sourceId || '';
+  }
+
+  getPathFromStoresToSources(room: IRoom) {
+    const srcPos = Object.values(this.getRoomEnergySources(room)).map(s => ({ pos: s.pos, range: 1 }));
+    const spawns = spawnService.getSpawnsInRoom(room);
+    const paths: IPosition[] = [];
+
+    Object.values(spawns).map(s => {
+      paths.push(...PathFinder.search(s.pos, srcPos, { swampCost: 1 }).path);
+    });
+    return paths;
   }
 
   private findEnergySourcesInRoom(room: IRoom) {

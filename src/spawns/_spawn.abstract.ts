@@ -8,6 +8,9 @@ abstract class AbstractSpawn {
   get id() {
     return this.spawn.id;
   }
+  get pos() {
+    return this.spawn.pos;
+  }
 
   protected spawn: ISpawn;
 

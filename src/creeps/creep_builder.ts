@@ -7,12 +7,14 @@ class CBuilder extends AbstractCreep<ICBuilderMemory> {
 
   constructor(creep: ICreep<ICBuilderMemory>, opts: CreepOptions) {
     super(creep, opts);
-    this.memory.state = 'collecting';
+    if (!this.memory.state) this.memory.state = 'collecting';
   }
 
   run() {
     if (this.memory.state === 'collecting') this.collect();
     else this.build();
+
+    this.beforeDestroy();
   }
 
   private getEnergyTarget(): IResource {
@@ -30,7 +32,12 @@ class CBuilder extends AbstractCreep<ICBuilderMemory> {
       this.memory.target = this.creep.pos.findClosestByPath(sites).id;
     }
 
-    return Game.getObjectById<IConstructionSite>(this.memory.target);
+    const site = Game.getObjectById<IConstructionSite>(this.memory.target);
+    if (!site) {
+      this.memory.target = '';
+    }
+
+    return site;
   }
 
   private collect(): void {
@@ -53,6 +60,13 @@ class CBuilder extends AbstractCreep<ICBuilderMemory> {
   private toggleState() {
     this.memory.target = '';
     this.memory.state = this.memory.state === 'building' ? 'collecting' : 'building';
+  }
+
+  private beforeDestroy() {
+    if (this.creep.ticksToLive === 1) {
+      this.creep.room.memory.currentCreeps[this.type] -= 1;
+      delete Memory.creeps[this.name];
+    }
   }
 }
 

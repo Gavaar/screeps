@@ -7,6 +7,7 @@ const CREEP_PARTS_BY_TYPE = {
   [CreepType.Miner]: [WORK, WORK, MOVE],
   [CreepType.Collector]: [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
   [CreepType.Builder]: [WORK, MOVE, MOVE, CARRY, CARRY],
+  [CreepType.Upgrader]: [MOVE, MOVE, CARRY, CARRY, WORK],
 };
 
 class Spawn extends AbstractSpawn {
@@ -18,7 +19,7 @@ class Spawn extends AbstractSpawn {
   }
 
   private spawnCreep(type: CreepType) {
-    const _name = nameService.createName();
+    const _name = `${type}_${nameService.createName()}`;
     this.spawn.spawnCreep(
       CREEP_PARTS_BY_TYPE[type],
       _name,

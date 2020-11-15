@@ -1,10 +1,12 @@
 declare interface IRoom {
   name: string;
+  controller: IController;
   energyAvailable: number;
   energyCapacityAvailable: number;
   memory: IRoomMemory;
   find<U>(finding: string): U[];
   lookAtArea(top: number, left: number, bottom: number, right: number, asArray = false): IRoomTerrain[];
+  createConstructionSite(pos: IPosition, type: string): number;
 }
 
 declare interface IRoomMemory {

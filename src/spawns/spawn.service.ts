@@ -21,6 +21,8 @@ class SpawnService {
       return CreepType.Miner;
     } else if (currentCreeps.builder < builder) {
       return CreepType.Builder;
+    } else {
+      return CreepType.Upgrader;
     }
   }
 }
