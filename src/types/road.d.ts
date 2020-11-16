@@ -2,6 +2,6 @@ declare interface IRoad {
   id: string;
   ticksToDecay: number;
   room: IRoom;
-  type: string;
+  structureType: string;
   pos: IPosition;
 }

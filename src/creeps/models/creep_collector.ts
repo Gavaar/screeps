@@ -1,7 +1,8 @@
 import { roomService } from '@rooms/room.service';
-import { CreepType } from './creep.interface';
+import { CleanOnDeath, CreepType } from '../creep.interface';
 import { AbstractCreep, CreepOptions } from './_creep.abstract';
 
+@CleanOnDeath()
 class CCollector extends AbstractCreep<ICCollectorMemory> {
   type = CreepType.Collector;
 
@@ -17,8 +18,6 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
   run() {
     if (this.memory.state === 'collecting') this.collect();
     else this.transfer();
-
-    this.beforeDestroy();
   }
 
   private getStructureTarget(): ISpawn | IContainer {
@@ -76,13 +75,6 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
   private toggleState() {
     this.memory.target = '';
     this.memory.state = (this.memory.state === 'transferring' ? 'collecting' : 'transferring');
-  }
-
-  private beforeDestroy() {
-    if (this.creep.ticksToLive === 1) {
-      this.creep.room.memory.currentCreeps[this.type] -= 1;
-      delete Memory.creeps[this.name];
-    }
   }
 }
 

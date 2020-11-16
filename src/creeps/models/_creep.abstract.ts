@@ -1,4 +1,4 @@
-import { CreepType } from './creep.interface';
+import { CreepType } from '../creep.interface';
 
 interface CreepOptions {
   name: string;

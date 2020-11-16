@@ -1,7 +1,12 @@
 import { energySourceService } from '@rooms/energy_sources/energy_source.service';
-import { CreepType } from './creep.interface';
+import { CleanOnDeath, CreepType } from '../creep.interface';
 import { AbstractCreep } from './_creep.abstract';
 
+const onDeath = (creep: CMiner) => {
+  creep.room.memory.sources[creep.memory.miningSite].memory.miners -= 1;
+}
+
+@CleanOnDeath(onDeath)
 class CMiner extends AbstractCreep<ICMinerMemory> {
   type = CreepType.Miner;
 
@@ -23,7 +28,6 @@ class CMiner extends AbstractCreep<ICMinerMemory> {
   private beforeDestroy(): void {
     if (this.creep.ticksToLive === 1) {
       this.creep.room.memory.currentCreeps[this.type] -= 1;
-      this.creep.room.memory.sources[this.creep.memory.miningSite].memory.miners -= 1;
       delete Memory.creeps[this.name];
     }
   }

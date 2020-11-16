@@ -1,4 +1,4 @@
-const nameHash = ['Fran', 'Juan', 'Pedro', 'Angel', 'Roman', 'Marquito'];
+const nameHash = ['fran', 'juan', 'nestor', 'angel', 'roman', 'marquito', 'melchor', 'bata', 'ines', 'josu', 'portu', 'christian', 'gordito', 'chapi', 'pernas', 'messi'];
 
 function getName(): string {
   return nameHash[Math.floor(Math.random() * nameHash.length)];

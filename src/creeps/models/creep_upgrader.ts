@@ -1,7 +1,8 @@
-import { CreepType } from './creep.interface';
+import { CleanOnDeath, CreepType } from '../creep.interface';
 import { AbstractCreep, CreepOptions } from './_creep.abstract';
 import { roomService } from '@rooms/room.service';
 
+@CleanOnDeath()
 class CUpgrader extends AbstractCreep<ICUpgraderMemory> {
   type = CreepType.Upgrader;
 
@@ -13,8 +14,6 @@ class CUpgrader extends AbstractCreep<ICUpgraderMemory> {
   run() {
     if (this.memory.state === 'collecting') this.collect();
     else this.upgrade();
-
-    this.beforeDestroy();
   }
 
   private collect(): void {
@@ -53,13 +52,6 @@ class CUpgrader extends AbstractCreep<ICUpgraderMemory> {
   private toggleState() {
     this.memory.target = '';
     this.memory.state = (this.memory.state === 'upgrading' ? 'collecting' : 'upgrading');
-  }
-
-  private beforeDestroy() {
-    if (this.creep.ticksToLive === 1) {
-      this.creep.room.memory.currentCreeps[this.type] -= 1;
-      delete Memory.creeps[this.name];
-    }
   }
 }
 

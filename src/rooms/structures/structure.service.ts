@@ -4,8 +4,9 @@ class StructureService {
   setRoadSites(room: IRoom, paths: IPosition[], limit = 10): void {
     const noRoads = paths.filter(pos => {
       const structures = pos.lookFor<IRoad>(LOOK_STRUCTURES);
-      return structures.find(s => s.type === STRUCTURE_ROAD) == null;
+      return (structures.find(s => s.structureType === STRUCTURE_ROAD) == null);
     });
+
     noRoads.length = limit;
     noRoads.map(p => roomService.setConstructionSite(room, p, STRUCTURE_ROAD));
   }

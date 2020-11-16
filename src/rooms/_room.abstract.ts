@@ -1,5 +1,5 @@
 import { creepService } from '@creeps/creep.service';
-import { AbstractCreep } from '@creeps/_creep.abstract';
+import { AbstractCreep } from '@creeps/models/_creep.abstract';
 import { spawnService } from '@spawns/spawn.service';
 import { AbstractSpawn } from '@spawns/_spawn.abstract';
 

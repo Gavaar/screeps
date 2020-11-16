@@ -34,6 +34,7 @@ class EnergySourceService {
         paths.push(...PathFinder.search(s.pos, [pos], { swampCost: 1 }).path);
       })
     });
+
     return paths;
   }
 

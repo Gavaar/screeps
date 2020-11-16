@@ -4,8 +4,8 @@
   "description": "TS script builder for Game Screeps",
   "main": "main.js",
   "scripts": {
-    "serve:screeps": "npx webpack -w",
-    "lint:screeps": "tslint --project tsconfig.json"
+    "serve": "npx webpack -w",
+    "lint": "tslint --project tsconfig.json"
   },
   "keywords": [
     "screeps"

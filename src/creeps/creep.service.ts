@@ -1,9 +1,9 @@
-import { CMiner } from './creep_miner';
+import { CMiner } from './models/creep_miner';
 import { CreepType } from './creep.interface';
-import { AbstractCreep } from './_creep.abstract';
-import { CCollector } from './creep_collector';
-import { CBuilder } from './creep_builder';
-import { CUpgrader } from './creep_upgrader';
+import { AbstractCreep } from './models/_creep.abstract';
+import { CCollector } from './models/creep_collector';
+import { CBuilder } from './models/creep_builder';
+import { CUpgrader } from './models/creep_upgrader';
 
 const typeClassMap = {
   [CreepType.Miner]: CMiner,

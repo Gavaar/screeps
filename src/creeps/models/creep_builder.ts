@@ -1,7 +1,8 @@
 import { roomService } from '@rooms/room.service';
-import { CreepType } from './creep.interface';
+import { CleanOnDeath, CreepType } from '../creep.interface';
 import { AbstractCreep, CreepOptions } from './_creep.abstract';
 
+@CleanOnDeath()
 class CBuilder extends AbstractCreep<ICBuilderMemory> {
   type = CreepType.Builder;
 
@@ -13,8 +14,6 @@ class CBuilder extends AbstractCreep<ICBuilderMemory> {
   run() {
     if (this.memory.state === 'collecting') this.collect();
     else this.build();
-
-    this.beforeDestroy();
   }
 
   private getEnergyTarget(): IResource {
@@ -60,13 +59,6 @@ class CBuilder extends AbstractCreep<ICBuilderMemory> {
   private toggleState() {
     this.memory.target = '';
     this.memory.state = this.memory.state === 'building' ? 'collecting' : 'building';
-  }
-
-  private beforeDestroy() {
-    if (this.creep.ticksToLive === 1) {
-      this.creep.room.memory.currentCreeps[this.type] -= 1;
-      delete Memory.creeps[this.name];
-    }
   }
 }
 
