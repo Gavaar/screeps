@@ -58,7 +58,7 @@ class EnergySourceService {
     });
 
     const optimalMinerCapacity = this.getOptimalWorkPerCreep(src, minerCapacity);
-    storagePos.length = optimalMinerCapacity;
+    storagePos.length = Math.ceil(optimalMinerCapacity);
     storagePos.forEach(pos => structureService.setStorageSite(src.room, pos));
 
     return { minerCapacity, optimalMinerCapacity, miners: 0 };
