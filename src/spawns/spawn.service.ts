@@ -15,7 +15,7 @@ class SpawnService {
     const { miner, collector, builder, upgrader } = roomService.getCreepCapacity(room);
     const { currentCreeps } = room.memory;
 
-    if (currentCreeps.miner * 2 > currentCreeps.collector && currentCreeps.collector < collector) {
+    if (currentCreeps.miner > currentCreeps.collector && currentCreeps.collector < collector) {
       return CreepType.Collector;
     } else if (currentCreeps.miner < miner) {
       return CreepType.Miner;

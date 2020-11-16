@@ -11,6 +11,9 @@ declare const FIND_MY_CREEPS: string;
 declare const FIND_SOURCES: string;
 declare const FIND_DROPPED_RESOURCES: string;
 
+// look constants
+declare const LOOK_STRUCTURES: string;
+
 // return value constants
 declare const OK: 0;
 declare const ERR_NOT_ENOUGH_RESOURCES: -6;
@@ -21,4 +24,5 @@ declare const ERR_NOT_IN_RANGE: -9;
 declare const RESOURCE_ENERGY: string;
 
 // structures
-declare const STRUCTURE_ROAD: string
+declare const STRUCTURE_ROAD: string;
+declare const STRUCTURE_CONTAINER: string;

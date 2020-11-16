@@ -30,9 +30,15 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
     return Game.getObjectById<ISpawn | IContainer>(this.memory.target);
   }
 
-  private getEnergyTarget(): IResource {
+  private getEnergyTarget(): IResource | IContainer {
     if (!this.memory.target) {
-      this.memory.target = roomService.getDroppedResources(this.creep.room)[0].id;
+      const dropped = roomService.getDroppedResources(this.creep.room)[0];
+      if (dropped) {
+        this.memory.target = dropped.id;
+      } else {
+        const container = roomService.getContainers(this.creep.room)[0];
+        if (container) this.memory.target = container.id;
+      }
     }
 
     const energy = Game.getObjectById<IResource>(this.memory.target);
@@ -42,10 +48,19 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
 
   private collect(): void {
     const target = this.getEnergyTarget();
-    const transfer = this.creep.pickup(target);
+    const transfer = this.attemptToWithdrawEnergy(target);
 
     if (transfer === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
     if (transfer === ERR_FULL) this.toggleState();
+  }
+
+  private attemptToWithdrawEnergy(target: IContainer | IResource): number {
+    if (!target) return 0;
+    if ((target as IContainer).type === STRUCTURE_CONTAINER) {
+      return this.creep.withdraw(target, RESOURCE_ENERGY);
+    }
+
+    return this.creep.pickup(target as IResource);
   }
 
   private transfer(): void {

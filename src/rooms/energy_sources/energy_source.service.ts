@@ -1,3 +1,4 @@
+import { structureService } from '@rooms/structures/structure.service';
 import { spawnService } from '@spawns/spawn.service';
 
 class EnergySourceService {
@@ -28,8 +29,10 @@ class EnergySourceService {
     const spawns = spawnService.getSpawnsInRoom(room);
     const paths: IPosition[] = [];
 
-    Object.values(spawns).map(s => {
-      paths.push(...PathFinder.search(s.pos, srcPos, { swampCost: 1 }).path);
+    Object.values(spawns).forEach(s => {
+      srcPos.forEach(pos => {
+        paths.push(...PathFinder.search(s.pos, [pos], { swampCost: 1 }).path);
+      })
     });
     return paths;
   }
@@ -48,6 +51,7 @@ class EnergySourceService {
 
     src.room.lookAtArea(y - 1, x - 1, y + 1, x + 1, true).forEach(pos => {
       if (pos.type === 'terrain' && (pos.terrain === 'swamp' || pos.terrain === 'plain')) {
+        structureService.setStorageSite(src.room, src.room.getPositionAt(pos.x, pos.y))
         minerCapacity += 1;
       }
     });

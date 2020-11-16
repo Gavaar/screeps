@@ -3,6 +3,7 @@ declare interface IPosition {
   x: number;
   y: number;
   findClosestByPath(objects: any[]): any;
+  lookFor<T>(type: string): T[];
 }
 
 declare interface IRoomTerrain {
