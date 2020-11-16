@@ -48,15 +48,31 @@ class EnergySourceService {
   private setSourceMemoryConfig(src: ISource): ISourceMemory {
     const { x, y } = src.pos;
     let minerCapacity = 0;
+    const storagePos: IPosition[] = [];
 
     src.room.lookAtArea(y - 1, x - 1, y + 1, x + 1, true).forEach(pos => {
       if (pos.type === 'terrain' && (pos.terrain === 'swamp' || pos.terrain === 'plain')) {
-        structureService.setStorageSite(src.room, src.room.getPositionAt(pos.x, pos.y))
+        storagePos.push(src.room.getPositionAt(pos.x, pos.y));
         minerCapacity += 1;
       }
     });
 
-    return { minerCapacity, miners: 0 };
+    const optimalMinerCapacity = this.getOptimalWorkPerCreep(src, minerCapacity);
+    storagePos.length = optimalMinerCapacity;
+    storagePos.forEach(pos => structureService.setStorageSite(src.room, pos));
+
+    return { minerCapacity, optimalMinerCapacity, miners: 0 };
+  }
+
+  private getOptimalWorkPerCreep(src: ISource, capacity: number): number {
+    const restoreCooldown = 300;
+    const harvestPerWork = 2;
+    const energyPerTick = src.energyCapacity / restoreCooldown; // 10
+    const worksPerTick = energyPerTick / harvestPerWork; // 5
+    const minerWorkCapacity = Math.floor((src.room.energyCapacityAvailable - 50) / 100);
+    const bestMinerAmount = worksPerTick / minerWorkCapacity; // 2
+
+    return capacity < bestMinerAmount ? capacity : bestMinerAmount;
   }
 }
 

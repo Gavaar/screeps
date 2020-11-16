@@ -57,14 +57,7 @@ class RoomService {
 
   private calculateMinersNeeded(room: IRoom): number {
     const enSrcs = energySourceService.getRoomEnergySources(room);
-    // maximum energy per tick extractable to not oversaturate the source
-    const workCapacityPerTick = Object.values(enSrcs).reduce((t, e) => t += e.energyCapacity, 0) / (300 );
-    // room capacity - required at least 1 move
-    const unitWorkCapacity = Math.floor((room.energyCapacityAvailable - 50) / 100);
-    const maxWorkingMiners = workCapacityPerTick / unitWorkCapacity;
-    const actualWorkingSpaces = Object.values(enSrcs).reduce((t, e) => t += e.memory.minerCapacity, 0);
-
-    return maxWorkingMiners > actualWorkingSpaces ? actualWorkingSpaces : maxWorkingMiners;
+    return Object.values(enSrcs).reduce((t, s) => t += s.memory.optimalMinerCapacity, 0);
   }
 
   private getPathFromStoresToController(room: IRoom) {

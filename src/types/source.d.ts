@@ -10,4 +10,5 @@ declare interface ISource {
 declare interface ISourceMemory {
   miners: number;
   minerCapacity: number;
+  optimalMinerCapacity: number;
 }
