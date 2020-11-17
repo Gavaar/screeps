@@ -1,5 +1,6 @@
+import { CleanOnDeath } from '@creeps/creep_parts/clean_on_death';
 import { energySourceService } from '@rooms/energy_sources/energy_source.service';
-import { CleanOnDeath, CreepType } from '../creep.interface';
+import { CreepType } from '../creep.interface';
 import { AbstractCreep } from './_creep.abstract';
 
 const onDeath = (creep: CMiner) => {

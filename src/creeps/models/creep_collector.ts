@@ -1,7 +1,10 @@
+import { CleanOnDeath } from '@creeps/creep_parts/clean_on_death';
+import { Collector } from '@creeps/creep_parts/collector';
 import { roomService } from '@rooms/room.service';
-import { CleanOnDeath, CreepType } from '../creep.interface';
+import { CreepType } from '../creep.interface';
 import { AbstractCreep, CreepOptions } from './_creep.abstract';
 
+@Collector()
 @CleanOnDeath()
 class CCollector extends AbstractCreep<ICCollectorMemory> {
   type = CreepType.Collector;
@@ -29,39 +32,6 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
     return Game.getObjectById<ISpawn | IContainer>(this.memory.target);
   }
 
-  private getEnergyTarget(): IResource | IContainer {
-    if (!this.memory.target) {
-      const dropped = roomService.getDroppedResources(this.creep.room)[0];
-      if (dropped) {
-        this.memory.target = dropped.id;
-      } else {
-        const container = roomService.getContainers(this.creep.room)[0];
-        if (container) this.memory.target = container.id;
-      }
-    }
-
-    const energy = Game.getObjectById<IResource>(this.memory.target);
-    if (!energy) this.memory.target = '';
-    return energy;
-  }
-
-  private collect(): void {
-    const target = this.getEnergyTarget();
-    const transfer = this.attemptToWithdrawEnergy(target);
-
-    if (transfer === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
-    if (transfer === ERR_FULL) this.toggleState();
-  }
-
-  private attemptToWithdrawEnergy(target: IContainer | IResource): number {
-    if (!target) return 0;
-    if ((target as IContainer).structureType === STRUCTURE_CONTAINER) {
-      return this.creep.withdraw(target, RESOURCE_ENERGY);
-    }
-
-    return this.creep.pickup(target as IResource);
-  }
-
   private transfer(): void {
     const target = this.getStructureTarget();
     const transfer = this.creep.transfer(target, RESOURCE_ENERGY);
@@ -72,7 +42,7 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
     if (!this.creep.store.getUsedCapacity()) this.toggleState();
   }
 
-  private toggleState() {
+  toggleState() {
     this.memory.target = '';
     this.memory.state = (this.memory.state === 'transferring' ? 'collecting' : 'transferring');
   }

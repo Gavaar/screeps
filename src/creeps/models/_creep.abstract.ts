@@ -29,6 +29,16 @@ abstract class AbstractCreep<T> {
     this.ctrlLevel = controllerService.getCustomCtrlLevel(creep.room);
   }
 
+  protected collect() {
+    console.warn(`Creep of type ${this.type} is trying to collect without the <Collector> decorator`);
+  }
+  protected upgrade() {
+    console.warn(`Creep of type ${this.type} is trying to upgrade without the <Upgrader> decorator`);
+  }
+  protected build() {
+    console.warn(`Creep of type ${this.type} is trying to build without the <Builder> decorator`);
+  }
+
   abstract run(): void;
 }
 
