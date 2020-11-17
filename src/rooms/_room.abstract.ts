@@ -2,6 +2,7 @@ import { creepService } from '@creeps/creep.service';
 import { AbstractCreep } from '@creeps/models/_creep.abstract';
 import { spawnService } from '@spawns/spawn.service';
 import { AbstractSpawn } from '@spawns/_spawn.abstract';
+import { controllerService } from './controller/controller.service';
 
 abstract class AbstractRoom {
   get name() {
@@ -17,13 +18,20 @@ abstract class AbstractRoom {
   spawns: { [name: string]: AbstractSpawn };
   creeps: { [name: string]: AbstractCreep<any> };
 
-  private _room: IRoom;
+  protected _room: IRoom;
+  protected ctrlLevel: number;
 
   constructor(room: IRoom) {
+    if (!Memory.rooms[room.name]) {
+      delete Memory.creeps;
+      Memory.id = 0;
+      Memory.rooms = { [room.name]: {} };
+    }
+
     this._room = room;
     this.spawns = spawnService.getSpawnsInRoom(room);
     this.creeps = creepService.getMyCreepsInRoom(room);
-    if (!Memory.rooms[room.name]) Memory.rooms[room.name] = {};
+    this.ctrlLevel = controllerService.getCustomCtrlLevel(room);
   }
 
   abstract run(): void;

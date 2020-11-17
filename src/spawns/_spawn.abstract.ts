@@ -1,3 +1,5 @@
+import { controllerService } from '@rooms/controller/controller.service';
+
 abstract class AbstractSpawn {
   get name(): string {
     return this.spawn.name;
@@ -13,9 +15,11 @@ abstract class AbstractSpawn {
   }
 
   protected spawn: ISpawn;
+  protected ctrlLevel: number;
 
   constructor(spawn: ISpawn) {
     this.spawn = spawn;
+    this.ctrlLevel = controllerService.getCustomCtrlLevel(spawn.room);
   }
 
   abstract run(): void;

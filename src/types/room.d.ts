@@ -5,6 +5,7 @@ declare interface IRoom {
   energyCapacityAvailable: number;
   memory: IRoomMemory;
   find<U>(finding: string): U[];
+  lookAt(x: number, y: number): { type: strin, [typeObj: string]: any }[];
   lookAtArea(top: number, left: number, bottom: number, right: number, asArray = false): IRoomTerrain[];
   getPositionAt(x: number, y: number): IPosition;
   createConstructionSite(pos: IPosition, type: string): number;

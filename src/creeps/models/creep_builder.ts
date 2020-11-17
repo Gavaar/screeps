@@ -16,32 +16,45 @@ class CBuilder extends AbstractCreep<ICBuilderMemory> {
     else this.build();
   }
 
-  private getEnergyTarget(): IResource {
+  private getEnergyTarget(): IResource | IContainer {
     if (!this.memory.target) {
-      const storages = roomService.getRoomStorages(this.creep.room);
-      this.memory.target = storages[storages.length - 1].id; // fullest
+      const dropped = roomService.getDroppedResources(this.creep.room)[0];
+      if (dropped) {
+        this.memory.target = dropped.id;
+      } else {
+        const container = roomService.getContainers(this.creep.room)[0];
+        if (container) this.memory.target = container.id;
+      }
     }
 
-    return Game.getObjectById<IResource>(this.memory.target);
+    const energy = Game.getObjectById<IResource>(this.memory.target);
+    if (!energy) this.memory.target = '';
+    return energy;
   }
 
   private getBuildTarget(): IConstructionSite {
     if (!this.memory.target) {
       const sites = roomService.getConstructionSites(this.creep.room);
-      this.memory.target = this.creep.pos.findClosestByPath(sites).id;
+      if (!sites.length) roomService.setRoadSites(this.creep.room);
+      this.memory.target = (this.creep.pos.findClosestByPath(sites) || { id: '' }).id;
     }
 
     const site = Game.getObjectById<IConstructionSite>(this.memory.target);
-    if (!site) {
-      this.memory.target = '';
+    return site;
+  }
+
+  private attemptToWithdrawEnergy(target: IContainer | IResource): number {
+    if (!target) return 0;
+    if ((target as IContainer).structureType === STRUCTURE_CONTAINER) {
+      return this.creep.withdraw(target, RESOURCE_ENERGY);
     }
 
-    return site;
+    return this.creep.pickup(target as IResource);
   }
 
   private collect(): void {
     const target = this.getEnergyTarget();
-    const transfer = this.creep.withdraw(target, RESOURCE_ENERGY);
+    const transfer = this.attemptToWithdrawEnergy(target);
 
     if (transfer === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
     if (transfer === ERR_NOT_ENOUGH_RESOURCES) this.creep.memory.target = '';

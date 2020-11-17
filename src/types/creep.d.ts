@@ -25,6 +25,7 @@ declare interface ICreepMemory {
 
 declare interface ICMinerMemory extends ICreepMemory {
   miningSite: string;
+  miningPos?: IPosition;
 }
 
 declare interface ICCollectorMemory extends ICreepMemory {

@@ -11,18 +11,26 @@ class SpawnService {
     }, {} as { [name: string]: AbstractSpawn });
   }
 
-  nextRequiredCreep(room: IRoom): CreepType | void {
+  nextRequiredCreep(room: IRoom, ctrlLevel: number): CreepType | void {
     const { miner, collector, builder, upgrader } = roomService.getCreepCapacity(room);
     const { currentCreeps } = room.memory;
 
-    if (currentCreeps.miner > currentCreeps.collector && currentCreeps.collector < collector) {
-      return CreepType.Collector;
-    } else if (currentCreeps.miner < miner) {
-      return CreepType.Miner;
-    } else if (currentCreeps.builder < builder) {
-      return CreepType.Builder;
-    } else if (currentCreeps.upgrader < upgrader) {
-      return CreepType.Upgrader;
+    switch(ctrlLevel) {
+      case 0:
+        if (currentCreeps.miner < miner && currentCreeps.miner <= currentCreeps.builder) return CreepType.Miner;
+        else if (currentCreeps.builder < builder) return CreepType.Builder;
+        break;
+      default:
+        if (currentCreeps.miner > currentCreeps.collector && currentCreeps.collector < collector) {
+          return CreepType.Collector;
+        } else if (currentCreeps.miner < miner) {
+          return CreepType.Miner;
+        } else if (currentCreeps.builder < builder) {
+          return CreepType.Builder;
+        } else if (currentCreeps.upgrader < upgrader) {
+          return CreepType.Upgrader;
+        }
+      break;
     }
   }
 }

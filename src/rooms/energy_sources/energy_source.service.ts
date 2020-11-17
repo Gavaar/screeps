@@ -38,6 +38,25 @@ class EnergySourceService {
     return paths;
   }
 
+  findFreeContainerInSource(src: ISource): IPosition{
+    const roomTerr = this.lookAroundSrc(src).find(pos => {
+      const { creep, container } = src.room.lookAt(pos.x, pos.y).reduce((t, obj) => {
+        if (obj.type === LOOK_CREEPS) t.creep = true;
+        if ((obj.type === LOOK_STRUCTURES || obj.type === LOOK_CONSTRUCTION_SITES) &&
+          obj[obj.type].structureType === STRUCTURE_CONTAINER) {
+          t.container = true;
+        }
+        return t;
+      }, { creep: false, container: false });
+
+      return container && !creep;
+    });
+
+    if (roomTerr) return src.room.getPositionAt(roomTerr.x, roomTerr.y);
+
+    return src.pos;
+  }
+
   private findEnergySourcesInRoom(room: IRoom) {
     return room.find<ISource>(FIND_SOURCES).reduce((srcMap, src) => {
       src.memory = this.setSourceMemoryConfig(src);
@@ -46,12 +65,16 @@ class EnergySourceService {
     }, {} as { [id: string]: ISource })
   }
 
-  private setSourceMemoryConfig(src: ISource): ISourceMemory {
+  private lookAroundSrc(src: ISource): IRoomTerrain[] {
     const { x, y } = src.pos;
+    return src.room.lookAtArea(y - 1, x - 1, y + 1, x + 1, true);
+  }
+
+  private setSourceMemoryConfig(src: ISource): ISourceMemory {
     let minerCapacity = 0;
     const storagePos: IPosition[] = [];
 
-    src.room.lookAtArea(y - 1, x - 1, y + 1, x + 1, true).forEach(pos => {
+    this.lookAroundSrc(src).forEach(pos => {
       if (pos.type === 'terrain' && (pos.terrain === 'swamp' || pos.terrain === 'plain')) {
         storagePos.push(src.room.getPositionAt(pos.x, pos.y));
         minerCapacity += 1;

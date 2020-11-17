@@ -6,6 +6,7 @@ declare const CARRY: string;
 // find constants
 declare const FIND_MY_SPAWNS: string;
 declare const FIND_CONSTRUCTION_SITES: string;
+declare const FIND_STRUCTURES: string;
 declare const FIND_MY_STRUCTURES: string;
 declare const FIND_MY_CREEPS: string;
 declare const FIND_SOURCES: string;
@@ -13,10 +14,14 @@ declare const FIND_DROPPED_RESOURCES: string;
 
 // look constants
 declare const LOOK_STRUCTURES: string;
+declare const LOOK_CREEPS: string;
+declare const LOOK_CONSTRUCTION_SITES: string;
 
 // return value constants
 declare const OK: 0;
+declare const ERR_NO_PATH: -2;
 declare const ERR_NOT_ENOUGH_RESOURCES: -6;
+declare const ERR_INVALID_TARGET: -7;
 declare const ERR_FULL: -8;
 declare const ERR_NOT_IN_RANGE: -9;
 

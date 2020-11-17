@@ -36,19 +36,19 @@ class RoomService {
   }
 
   getContainers(room: IRoom): IContainer[] {
-    return room.find<IContainer>(FIND_MY_STRUCTURES).filter(s => s.type === STRUCTURE_CONTAINER)
+    return room.find<IContainer>(FIND_STRUCTURES).filter(s => s.structureType === STRUCTURE_CONTAINER)
       .sort((sa, sb) => sb.store.getUsedCapacity() - sa.store.getUsedCapacity());
   }
 
   getConstructionSites(room: IRoom): IConstructionSite[] {
-    const sites = room.find<IConstructionSite>(FIND_CONSTRUCTION_SITES);
-    if (!sites.length) {
-      let paths = energySourceService.getPathFromStoresToSources(room);
-      if (!paths.length) paths = this.getPathFromStoresToController(room);
+    return room.find<IConstructionSite>(FIND_CONSTRUCTION_SITES);
+  }
 
-      structureService.setRoadSites(room, paths);
-    }
-    return sites;
+  setRoadSites(room: IRoom): void {
+    let paths = energySourceService.getPathFromStoresToSources(room);
+    if (!paths.length) paths = this.getPathFromStoresToController(room);
+
+    structureService.setRoadSites(room, paths);
   }
 
   setConstructionSite(room: IRoom, pos: IPosition, type: string): number {

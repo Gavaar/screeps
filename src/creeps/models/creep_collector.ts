@@ -55,7 +55,7 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
 
   private attemptToWithdrawEnergy(target: IContainer | IResource): number {
     if (!target) return 0;
-    if ((target as IContainer).type === STRUCTURE_CONTAINER) {
+    if ((target as IContainer).structureType === STRUCTURE_CONTAINER) {
       return this.creep.withdraw(target, RESOURCE_ENERGY);
     }
 

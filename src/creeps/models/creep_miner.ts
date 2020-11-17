@@ -11,10 +11,27 @@ class CMiner extends AbstractCreep<ICMinerMemory> {
   type = CreepType.Miner;
 
   run() {
+    this.harvest();
+  }
+
+  private harvest() {
     const src = this.getMiningSrc();
-    const harvesting = this.creep.harvest(src);
-    if (harvesting === ERR_NOT_IN_RANGE) this.creep.moveTo(src.pos, { visualizePathStyle: {} });
-    this.beforeDestroy();
+    const harvest = this.creep.harvest(src);
+
+    if (harvest === ERR_NOT_IN_RANGE) {
+      const movePos = this.findFreeContainer(src);
+      const moved = this.creep.moveTo(movePos, { visualizePathStyle: {} });
+      if (moved === ERR_NO_PATH || moved === ERR_INVALID_TARGET) {
+        delete this.creep.memory.miningPos;
+      }
+    }
+  }
+
+  private findFreeContainer(src: ISource) {
+    if (!this.memory.miningPos) {
+      this.memory.miningPos = energySourceService.findFreeContainerInSource(src);
+    }
+    return this.memory.miningPos;
   }
 
   private getMiningSrc(): ISource {
@@ -23,13 +40,6 @@ class CMiner extends AbstractCreep<ICMinerMemory> {
     }
 
     return Game.getObjectById<ISource>(this.memory.miningSite);
-  }
-
-  private beforeDestroy(): void {
-    if (this.creep.ticksToLive === 1) {
-      this.creep.room.memory.currentCreeps[this.type] -= 1;
-      delete Memory.creeps[this.name];
-    }
   }
 }
 
