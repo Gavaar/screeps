@@ -1,7 +1,6 @@
 import { Builder } from '@creeps/creep_parts/builder';
 import { CleanOnDeath } from '@creeps/creep_parts/clean_on_death';
 import { Collector } from '@creeps/creep_parts/collector';
-import { roomService } from '@rooms/room.service';
 import { CreepType } from '../creep.interface';
 import { AbstractCreep, CreepOptions } from './_creep.abstract';
 

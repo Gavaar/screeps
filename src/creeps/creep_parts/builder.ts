@@ -30,6 +30,7 @@ function Builder() {
         const build = this.creep.build(target);
 
         if (build === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
+        if (build === ERR_INVALID_TARGET) this.memory.target = '';
         if (build === ERR_NOT_ENOUGH_RESOURCES && this.toggleState) this.toggleState();
       }
     }

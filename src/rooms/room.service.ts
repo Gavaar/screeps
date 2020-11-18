@@ -17,7 +17,7 @@ class RoomService {
 
     const miner = this.calculateMinersNeeded(room);
     const collector = miner;
-    const builder = miner;
+    const builder = miner * 2;
     const upgrader = room.controller.level;
 
     room.memory.creepCapacity = { miner, collector, builder, upgrader }

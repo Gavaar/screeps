@@ -23,7 +23,7 @@ function Collector() {
 
       private getEnergyTarget(): IResource | IContainer {
         if (!this.memory.target) {
-          const dropped = roomService.getDroppedResources(this.creep.room)[0];
+          const dropped = this.pos.findClosestByPath(roomService.getDroppedResources(this.creep.room));
           if (dropped) {
             this.memory.target = dropped.id;
           } else {
