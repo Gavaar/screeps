@@ -1,4 +1,4 @@
-import { structureService } from '@rooms/structures/structure.service';
+import { CreepType } from '@creeps/creep.interface';
 import { spawnService } from '@spawns/spawn.service';
 
 class EnergySourceService {
@@ -10,7 +10,7 @@ class EnergySourceService {
     return sources;
   }
 
-  getNextEnergySourceInRoom(room: IRoom): string {
+  nextEnergySourceInRoom(room: IRoom): string {
     const sources = this.getRoomEnergySources(room);
     const sourceId = Object.keys(sources)
       .sort((sa, sb) => { // order them by lower amount of miners
@@ -24,24 +24,29 @@ class EnergySourceService {
     return sourceId || '';
   }
 
+  droppedResources(room: IRoom): IResource[] {
+    return room.find<IResource>(FIND_DROPPED_RESOURCES)
+      .sort((sa, sb) => sb.amount - sa.amount);
+  }
+
   getPathFromStoresToSources(room: IRoom) {
-    const srcPos = Object.values(this.getRoomEnergySources(room)).map(s => ({ pos: s.pos, range: 1 }));
+    const srcPos = Object.values(this.getRoomEnergySources(room)).map(s => s.pos);
     const spawns = spawnService.getSpawnsInRoom(room);
     const paths: IPosition[] = [];
 
-    Object.values(spawns).forEach(s => {
-      srcPos.forEach(pos => {
-        paths.push(...PathFinder.search(s.pos, [pos], { swampCost: 1 }).path);
+    Object.values(spawns).forEach(sp => {
+      srcPos.forEach(_srcPos => {
+        paths.push(...room.findPath(sp.pos, _srcPos, { swampCost: 1, ignoreCreeps: true, range: 1 }));
       })
     });
 
-    return paths;
+    return paths.map(({ x, y }) => room.getPositionAt(x, y));
   }
 
-  findFreeContainerInSource(src: ISource): IPosition{
+  findFreeContainerInSource(src: ISource): IPosition {
     const roomTerr = this.lookAroundSrc(src).find(pos => {
       const { creep, container } = src.room.lookAt(pos.x, pos.y).reduce((t, obj) => {
-        if (obj.type === LOOK_CREEPS) t.creep = true;
+        if (obj.type === LOOK_CREEPS && obj.creep.type === CreepType.Miner) t.creep = true;
         if ((obj.type === LOOK_STRUCTURES || obj.type === LOOK_CONSTRUCTION_SITES) &&
           obj[obj.type].structureType === STRUCTURE_CONTAINER) {
           t.container = true;
@@ -54,7 +59,7 @@ class EnergySourceService {
 
     if (roomTerr) return src.room.getPositionAt(roomTerr.x, roomTerr.y);
 
-    return src.pos;
+    return {} as IPosition;
   }
 
   private findEnergySourcesInRoom(room: IRoom) {
@@ -81,20 +86,23 @@ class EnergySourceService {
       }
     });
 
-    const optimalMinerCapacity = this.getOptimalWorkPerCreep(src, minerCapacity);
-    storagePos.length = Math.ceil(optimalMinerCapacity);
-    storagePos.forEach(pos => structureService.setStorageSite(src.room, pos));
+    const optimalMinerCapacity = this.getOptimalMinerPerTick(src, minerCapacity);
+    storagePos.length = optimalMinerCapacity;
+    storagePos.forEach(pos => {
+      src.room.createConstructionSite(pos, STRUCTURE_CONTAINER);
+      src.room.createConstructionSite(pos, STRUCTURE_ROAD);
+    });
 
     return { minerCapacity, optimalMinerCapacity, miners: 0 };
   }
 
-  private getOptimalWorkPerCreep(src: ISource, capacity: number): number {
-    const restoreCooldown = 300;
-    const harvestPerWork = 2;
-    const energyPerTick = src.energyCapacity / restoreCooldown; // 10
-    const worksPerTick = energyPerTick / harvestPerWork; // 5
-    const minerWorkCapacity = Math.floor((src.room.energyCapacityAvailable - 50) / 100);
-    const bestMinerAmount = worksPerTick / minerWorkCapacity; // 2
+  private getOptimalMinerPerTick(src: ISource, capacity: number): number {
+    const restoreCooldown = 300; // 300 t
+    const energyPerWork = 2; // 2e / w
+    const optimalEnergyPerTick = src.energyCapacity / restoreCooldown; // 10e / t
+    const harvestSpeed = optimalEnergyPerTick / energyPerWork; // 5w / t
+    const workPerMiner = Math.floor((src.room.energyCapacityAvailable - 50) / 100); // 2w / m
+    const bestMinerAmount = Math.ceil(harvestSpeed / workPerMiner); // 2.5 m / t =ceil=> 3 m / t
 
     return capacity < bestMinerAmount ? capacity : bestMinerAmount;
   }

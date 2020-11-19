@@ -11,7 +11,7 @@ class ControllerService {
   private calculateCtrlLvlModifiers(room: IRoom): number {
     let modifier = 0;
 
-    const containersUnbuilt = roomService.getConstructionSites(room)
+    const containersUnbuilt = roomService.constructionSites(room)
       .filter(site => site.structureType === STRUCTURE_CONTAINER).length;
     if (containersUnbuilt || room.controller.ticksToDowngrade > 19900) modifier -= 1;
 

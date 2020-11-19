@@ -1,4 +1,5 @@
-import { roomService } from '@rooms/room.service';
+import { energySourceService } from '@rooms/energy_sources/energy_source.service';
+import { storageService } from '@rooms/structures/storage.service';
 
 /** Attaches `collect` which uses `getEnergyTarget` and `attemptToWithdrawEnergy` to creep.
  *
@@ -23,11 +24,11 @@ function Collector() {
 
       private getEnergyTarget(): IResource | IContainer {
         if (!this.memory.target) {
-          const dropped = this.pos.findClosestByPath(roomService.getDroppedResources(this.creep.room));
+          const dropped = this.pos.findClosestByPath(energySourceService.droppedResources(this.creep.room));
           if (dropped) {
             this.memory.target = dropped.id;
           } else {
-            const container = roomService.getContainers(this.creep.room)[0];
+            const container = storageService.getContainers(this.creep.room)[0];
             if (container) this.memory.target = container.id;
           }
         }

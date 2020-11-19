@@ -1,5 +1,3 @@
-import { AbstractCreep } from './models/_creep.abstract';
-
 enum CreepType {
   Miner = 'miner',
   Collector = 'collector',

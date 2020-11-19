@@ -1,9 +1,10 @@
 import { CMiner } from './models/creep_miner';
-import { CreepType } from './creep.interface';
+import { CreepType, RequiredCreeps } from './creep.interface';
 import { AbstractCreep } from './models/_creep.abstract';
 import { CCollector } from './models/creep_collector';
 import { CBuilder } from './models/creep_builder';
 import { CUpgrader } from './models/creep_upgrader';
+import { energySourceService } from '@rooms/energy_sources/energy_source.service';
 
 const typeClassMap = {
   [CreepType.Miner]: CMiner,
@@ -12,8 +13,33 @@ const typeClassMap = {
   [CreepType.Upgrader]: CUpgrader,
 }
 
+const bodyPartMap = {
+  [CreepType.Miner]: {
+    fixed: [MOVE, WORK],
+    repeat: [WORK],
+  },
+  [CreepType.Collector]: {
+    fixed: [MOVE, CARRY],
+    repeat: [CARRY, MOVE],
+  },
+  [CreepType.Builder]: {
+    fixed: [WORK, MOVE, MOVE, CARRY],
+    repeat: [WORK, MOVE, CARRY, MOVE]
+  },
+  [CreepType.Upgrader]: {
+    fixed: [MOVE, MOVE, CARRY, CARRY, WORK],
+    repeat: [MOVE, CARRY, WORK, MOVE],
+  }
+};
+
+const partPrice = {
+  [WORK]: 100,
+  [CARRY]: 50,
+  [MOVE]: 50,
+};
+
 class CreepService {
-  getMyCreepsInRoom(room: IRoom): { [creepName: string]: AbstractCreep<any> } {
+  myCreepsInRoom(room: IRoom): { [creepName: string]: AbstractCreep<any> } {
     return room.find<ICreep<any>>(FIND_MY_CREEPS).reduce((creepMap, creep) => {
       const creepOpts = { name: creep.name };
       const { type } = creep.memory as { type: CreepType };
@@ -22,6 +48,70 @@ class CreepService {
       creepMap[creep.name] = new creepClass(creep, creepOpts);
       return creepMap;
     }, {} as { [creepName: string]: AbstractCreep<any> })
+  }
+
+  creepCapacity(room: IRoom): RequiredCreeps {
+    if (room.memory.creepCapacity) return room.memory.creepCapacity;
+
+    room.memory.currentCreeps = { miner: 0, collector: 0, builder: 0, upgrader: 0 }
+
+    const miner = this.calculateMinersNeeded(room);
+    const collector = miner;
+    const builder = miner * 2;
+    const upgrader = room.controller.level;
+
+    room.memory.creepCapacity = { miner, collector, builder, upgrader }
+    return room.memory.creepCapacity;
+  }
+
+  nextRequiredCreep(room: IRoom, ctrlLevel: number): CreepType | void {
+    const { miner, collector, builder, upgrader } = this.creepCapacity(room);
+    const { currentCreeps } = room.memory;
+
+    switch(ctrlLevel) {
+      case 0:
+        if (currentCreeps.miner < miner && currentCreeps.miner <= currentCreeps.builder) return CreepType.Miner;
+        else if (currentCreeps.builder < builder) return CreepType.Builder;
+        break;
+      default:
+        if (currentCreeps.miner > currentCreeps.collector && currentCreeps.collector < collector) {
+          return CreepType.Collector;
+        } else if (currentCreeps.miner < miner) {
+          return CreepType.Miner;
+        } else if (currentCreeps.builder < builder) {
+          return CreepType.Builder;
+        } else if (currentCreeps.upgrader < upgrader) {
+          return CreepType.Upgrader;
+        }
+      break;
+    }
+  }
+
+  bodyPartsByCapacity(type: CreepType, capacity: number): string[] {
+    const affordableBody: string[] = [];
+    const addPart = (part: string) => {
+      capacity -= partPrice[part];
+      if (capacity > 0) affordableBody.push(part);
+    }
+
+    bodyPartMap[type].fixed.forEach(part => {
+      addPart(part);
+    });
+
+    const { repeat } = bodyPartMap[type];
+    while (capacity > 0) {
+      let repeatableIndex = -1;
+      repeatableIndex += 1;
+      const _part = repeat[repeatableIndex % repeat.length];
+      addPart(_part);
+    }
+
+    return affordableBody;
+  }
+
+  private calculateMinersNeeded(room: IRoom): number {
+    const enSrcs = energySourceService.getRoomEnergySources(room);
+    return Math.ceil(Object.values(enSrcs).reduce((t, s) => t += s.memory.optimalMinerCapacity, 0));
   }
 }
 

@@ -1,6 +1,6 @@
 import { CleanOnDeath } from '@creeps/creep_parts/clean_on_death';
 import { Collector } from '@creeps/creep_parts/collector';
-import { roomService } from '@rooms/room.service';
+import { storageService } from '@rooms/structures/storage.service';
 import { CreepType } from '../creep.interface';
 import { AbstractCreep, CreepOptions } from './_creep.abstract';
 
@@ -25,7 +25,7 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
 
   private getStructureTarget(): ISpawn | IContainer {
     if (!this.memory.target) {
-      const emptiestStorage = roomService.getRoomStorages(this.creep.room)[0];
+      const emptiestStorage = storageService.getStorages(this.creep.room, true)[0];
       this.memory.target = emptiestStorage.id;
     }
 

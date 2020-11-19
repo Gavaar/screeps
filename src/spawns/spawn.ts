@@ -1,41 +1,35 @@
 import { nameService } from '@common/name_creator.service';
 import { CreepType } from '@creeps/creep.interface';
-import { spawnService } from './spawn.service';
+import { creepService } from '@creeps/creep.service';
 import { AbstractSpawn } from './_spawn.abstract';
-
-const getPartsByTypeAndLevel = (type: CreepType, lvl: number) => {
-  switch (lvl) {
-    default:
-      return CREEP_PARTS_BY_TYPE[type];
-  }
-}
-
-const CREEP_PARTS_BY_TYPE = {
-  [CreepType.Miner]: [WORK, WORK, MOVE],
-  [CreepType.Collector]: [CARRY, CARRY, CARRY, MOVE, MOVE, MOVE],
-  [CreepType.Builder]: [WORK, MOVE, MOVE, CARRY, CARRY],
-  [CreepType.Upgrader]: [MOVE, MOVE, CARRY, CARRY, WORK],
-} as { [type: string]: string[] };
 
 class Spawn extends AbstractSpawn {
   run() {
+    const capacityAvailable = this.room.energyCapacityAvailable;
+
     switch (this.ctrlLevel) {
+      case 1:
+        if (this.room.memory.latestCapacity !== capacityAvailable) this.recalculateRoomValues()
       default:
-        if (this.room.energyAvailable === this.room.energyCapacityAvailable) {
-          const type = spawnService.nextRequiredCreep(this.room, this.ctrlLevel);
+        if (this.room.energyAvailable === capacityAvailable) {
+          const type = creepService.nextRequiredCreep(this.room, this.ctrlLevel);
           if (type) this.spawnCreep(type);
         }
-        break;
     }
   }
 
   private spawnCreep(type: CreepType) {
     const _name = `${type}_${nameService.createName()}`;
-    const parts = getPartsByTypeAndLevel(type, this.ctrlLevel);
+    const parts = creepService.bodyPartsByCapacity(type, this.room.energyCapacityAvailable);
     this.spawn.spawnCreep(parts, _name);
 
     this.room.memory.currentCreeps[type] += 1;
     Memory.creeps[_name] = { type };
+  }
+
+  private recalculateRoomValues() {
+    delete this.room.memory.creepCapacity;
+    creepService.creepCapacity(this.room);
   }
 }
 

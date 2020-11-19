@@ -1,4 +1,5 @@
 import { roomService } from '@rooms/room.service';
+import { roadService } from '@rooms/structures/road.service';
 
 /** Attaches `build` which uses `getBuildTarget` to creep.
  *
@@ -14,19 +15,20 @@ function Builder() {
         super(...args);
       }
 
-      private getBuildTarget(): IConstructionSite {
-        if (!this.memory.target) {
-          const sites = roomService.getConstructionSites(this.creep.room);
-          if (!sites.length) roomService.setRoadSites(this.creep.room);
-          this.memory.target = (this.creep.pos.findClosestByPath(sites) || { id: '' }).id;
+      private prepareSiteToBuild(): IConstructionSite {
+        const sites = roomService.constructionSites(this.creep.room);
+        if (!sites.length) {
+          roadService.setRoadSites(this.creep.room);
+          // add more site adding here
+          sites.push(...roomService.constructionSites(this.creep.room))
         }
 
-        const site = Game.getObjectById<IConstructionSite>(this.memory.target);
-        return site;
+        this.memory.target = (this.creep.pos.findClosestByPath(sites) || { id: '' }).id;
+        return Game.getObjectById<IConstructionSite>(this.memory.target);
       }
 
       private build(): void {
-        const target = this.getBuildTarget();
+        const target = this.prepareSiteToBuild();
         const build = this.creep.build(target);
 
         if (build === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });

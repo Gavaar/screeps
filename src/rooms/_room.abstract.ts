@@ -22,7 +22,7 @@ abstract class AbstractRoom {
   protected ctrlLevel: number;
 
   constructor(room: IRoom) {
-    if (!Memory.rooms[room.name]) {
+    if (!Memory.rooms || !Memory.rooms[room.name]) {
       delete Memory.creeps;
       Memory.id = 0;
       Memory.rooms = { [room.name]: {} };
@@ -30,7 +30,7 @@ abstract class AbstractRoom {
 
     this._room = room;
     this.spawns = spawnService.getSpawnsInRoom(room);
-    this.creeps = creepService.getMyCreepsInRoom(room);
+    this.creeps = creepService.myCreepsInRoom(room);
     this.ctrlLevel = controllerService.getCustomCtrlLevel(room);
   }
 
