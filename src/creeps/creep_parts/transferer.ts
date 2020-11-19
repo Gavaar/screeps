@@ -29,7 +29,7 @@ function Transferer() {
         if (transfer === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
         if (transfer === ERR_FULL) this.creep.memory.target = '';
 
-        if (!this.creep.store.getUsedCapacity(RESOURCE_ENERGY && this.toggleState)) this.toggleState();
+        if (!this.creep.store.getUsedCapacity(RESOURCE_ENERGY) && this.toggleState) this.toggleState();
       }
     }
 

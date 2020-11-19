@@ -16,10 +16,12 @@ function Collector() {
 
       private collect(): void {
         const target = this.getEnergyTarget();
-        const transfer = this.attemptToWithdrawEnergy(target);
+        const withdraw = this.attemptToWithdrawEnergy(target);
 
-        if (transfer === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
-        if ((transfer === ERR_FULL || !this.store.getFreeCapacity()) && this.toggleState) this.toggleState();
+        if (withdraw === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
+        if ((withdraw === ERR_FULL || !this.store.getFreeCapacity(RESOURCE_ENERGY)) && this.toggleState) {
+          this.toggleState();
+        }
       }
 
       private getEnergyTarget(): IResource | IContainer {
