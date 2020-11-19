@@ -36,7 +36,7 @@ class EnergySourceService {
 
     Object.values(spawns).forEach(sp => {
       srcPos.forEach(_srcPos => {
-        paths.push(...room.findPath(sp.pos, _srcPos, { swampCost: 1, ignoreCreeps: true, range: 1 }));
+        paths.push(...room.findPath(sp.pos, _srcPos, { swampCost: 1, ignoreCreeps: true, range: 0 }));
       })
     });
 
@@ -46,7 +46,7 @@ class EnergySourceService {
   findFreeContainerInSource(src: ISource): IPosition {
     const roomTerr = this.lookAroundSrc(src).find(pos => {
       const { creep, container } = src.room.lookAt(pos.x, pos.y).reduce((t, obj) => {
-        if (obj.type === LOOK_CREEPS && obj.creep.type === CreepType.Miner) t.creep = true;
+        if (obj.type === LOOK_CREEPS && obj.creep.memory.type === CreepType.Miner) t.creep = true;
         if ((obj.type === LOOK_STRUCTURES || obj.type === LOOK_CONSTRUCTION_SITES) &&
           obj[obj.type].structureType === STRUCTURE_CONTAINER) {
           t.container = true;

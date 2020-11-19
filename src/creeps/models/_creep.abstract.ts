@@ -17,6 +17,9 @@ abstract class AbstractCreep<T> {
   get pos(): IPosition {
     return this.creep.pos;
   }
+  get store(): IStore {
+    return this.creep.store;
+  }
 
   abstract type: CreepType;
 
@@ -37,6 +40,12 @@ abstract class AbstractCreep<T> {
   }
   protected build() {
     console.warn(`Creep of type ${this.type} is trying to build without the <Builder> decorator`);
+  }
+  protected harvest() {
+    console.warn(`Creep of type ${this.type} is trying to harvest without the <Harvester> decorator`);
+  }
+  protected transfer() {
+    console.warn(`Creep of type ${this.type} is trying to transfer without the <Transferrer> decorator`);
   }
 
   abstract run(): void;

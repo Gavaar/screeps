@@ -19,17 +19,18 @@ function Collector() {
         const transfer = this.attemptToWithdrawEnergy(target);
 
         if (transfer === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
-        if (transfer === ERR_FULL && this.toggleState) this.toggleState();
+        if ((transfer === ERR_FULL || !this.store.getFreeCapacity()) && this.toggleState) this.toggleState();
       }
 
       private getEnergyTarget(): IResource | IContainer {
         if (!this.memory.target) {
-          const dropped = this.pos.findClosestByPath(energySourceService.droppedResources(this.creep.room));
-          if (dropped) {
-            this.memory.target = dropped.id;
+          const container = storageService.getContainers(this.creep.room)[0];
+
+          if (container) {
+            this.memory.target = container.id;
           } else {
-            const container = storageService.getContainers(this.creep.room)[0];
-            if (container) this.memory.target = container.id;
+            const dropped = this.pos.findClosestByPath(energySourceService.droppedResources(this.creep.room));
+            if (dropped) this.memory.target = dropped.id;
           }
         }
 

@@ -1,10 +1,12 @@
 import { CleanOnDeath } from '@creeps/creep_parts/clean_on_death';
 import { Collector } from '@creeps/creep_parts/collector';
+import { Transferer } from '@creeps/creep_parts/transferer';
 import { storageService } from '@rooms/structures/storage.service';
 import { CreepType } from '../creep.interface';
 import { AbstractCreep, CreepOptions } from './_creep.abstract';
 
 @Collector()
+@Transferer()
 @CleanOnDeath()
 class CCollector extends AbstractCreep<ICCollectorMemory> {
   type = CreepType.Collector;
@@ -21,25 +23,6 @@ class CCollector extends AbstractCreep<ICCollectorMemory> {
   run() {
     if (this.memory.state === 'collecting') this.collect();
     else this.transfer();
-  }
-
-  private getStructureTarget(): ISpawn | IContainer {
-    if (!this.memory.target) {
-      const emptiestStorage = storageService.getStorages(this.creep.room, true)[0];
-      this.memory.target = emptiestStorage.id;
-    }
-
-    return Game.getObjectById<ISpawn | IContainer>(this.memory.target);
-  }
-
-  private transfer(): void {
-    const target = this.getStructureTarget();
-    const transfer = this.creep.transfer(target, RESOURCE_ENERGY);
-
-    if (transfer === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
-    if (transfer === ERR_FULL) this.creep.memory.target = '';
-
-    if (!this.creep.store.getUsedCapacity()) this.toggleState();
   }
 
   toggleState() {

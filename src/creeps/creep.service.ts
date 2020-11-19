@@ -5,8 +5,10 @@ import { CCollector } from './models/creep_collector';
 import { CBuilder } from './models/creep_builder';
 import { CUpgrader } from './models/creep_upgrader';
 import { energySourceService } from '@rooms/energy_sources/energy_source.service';
+import { CRefiller } from './models/creep_refiller';
 
 const typeClassMap = {
+  [CreepType.Refiller]: CRefiller,
   [CreepType.Miner]: CMiner,
   [CreepType.Collector]: CCollector,
   [CreepType.Builder]: CBuilder,
@@ -29,6 +31,10 @@ const bodyPartMap = {
   [CreepType.Upgrader]: {
     fixed: [MOVE, MOVE, CARRY, CARRY, WORK],
     repeat: [MOVE, CARRY, WORK, MOVE],
+  },
+  [CreepType.Refiller]: {
+    fixed: [MOVE, WORK, CARRY, MOVE, CARRY],
+    repeat: [WORK, MOVE, CARRY],
   }
 };
 
@@ -69,6 +75,7 @@ class CreepService {
     const { currentCreeps } = room.memory;
 
     switch(ctrlLevel) {
+      case 1:
       case 0:
         if (currentCreeps.miner < miner && currentCreeps.miner <= currentCreeps.builder) return CreepType.Miner;
         else if (currentCreeps.builder < builder) return CreepType.Builder;
@@ -91,7 +98,7 @@ class CreepService {
     const affordableBody: string[] = [];
     const addPart = (part: string) => {
       capacity -= partPrice[part];
-      if (capacity > 0) affordableBody.push(part);
+      if (capacity >= 0) affordableBody.push(part);
     }
 
     bodyPartMap[type].fixed.forEach(part => {
@@ -99,8 +106,8 @@ class CreepService {
     });
 
     const { repeat } = bodyPartMap[type];
-    while (capacity > 0) {
-      let repeatableIndex = -1;
+    let repeatableIndex = -1;
+    while (capacity >= 0) {
       repeatableIndex += 1;
       const _part = repeat[repeatableIndex % repeat.length];
       addPart(_part);

@@ -23,6 +23,11 @@ declare interface ICreepMemory {
   type: CreepType;
 }
 
+declare interface ICRefillerMemory {
+  target: string;
+  state: 'harvesting' | 'transferring';
+}
+
 declare interface ICMinerMemory extends ICreepMemory {
   miningSite: string;
   miningPos?: IPosition;

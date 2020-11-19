@@ -1,5 +1,6 @@
 import { roomService } from '@rooms/room.service';
 import { roadService } from '@rooms/structures/road.service';
+import { storageService } from '@rooms/structures/storage.service';
 
 /** Attaches `build` which uses `getBuildTarget` to creep.
  *
@@ -18,7 +19,7 @@ function Builder() {
       private prepareSiteToBuild(): IConstructionSite {
         const sites = roomService.constructionSites(this.creep.room);
         if (!sites.length) {
-          roadService.setRoadSites(this.creep.room);
+          this.setBuildingSites();
           // add more site adding here
           sites.push(...roomService.constructionSites(this.creep.room))
         }
@@ -27,13 +28,24 @@ function Builder() {
         return Game.getObjectById<IConstructionSite>(this.memory.target);
       }
 
+      private setBuildingSites(): void {
+        switch (this.ctrlLevel) {
+          case 2:
+            storageService.setExtension(this.creep.room);
+          default:
+            roadService.setRoadSites(this.creep.room);
+        }
+      }
+
       private build(): void {
         const target = this.prepareSiteToBuild();
         const build = this.creep.build(target);
 
         if (build === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
         if (build === ERR_INVALID_TARGET) this.memory.target = '';
-        if (build === ERR_NOT_ENOUGH_RESOURCES && this.toggleState) this.toggleState();
+        if ((build === ERR_NOT_ENOUGH_RESOURCES || !this.store.getUsedCapacity()) && this.toggleState) {
+          this.toggleState();
+        }
       }
     }
 

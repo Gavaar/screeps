@@ -1,4 +1,5 @@
 enum CreepType {
+  Refiller = 'refiller',
   Miner = 'miner',
   Collector = 'collector',
   Builder = 'builder',

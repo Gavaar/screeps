@@ -1,3 +1,4 @@
+import { nameService } from '@common/name_creator.service';
 import { creepService } from '@creeps/creep.service';
 import { AbstractCreep } from '@creeps/models/_creep.abstract';
 import { spawnService } from '@spawns/spawn.service';
@@ -24,8 +25,11 @@ abstract class AbstractRoom {
   constructor(room: IRoom) {
     if (!Memory.rooms || !Memory.rooms[room.name]) {
       delete Memory.creeps;
-      Memory.id = 0;
-      Memory.rooms = { [room.name]: {} };
+      delete Memory.id;
+      Memory.rooms = { [room.name]: {
+        latestCapacity: this.energyCapacityAvailable
+      } };
+      nameService.id = 0;
     }
 
     this._room = room;

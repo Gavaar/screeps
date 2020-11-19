@@ -4,10 +4,11 @@ declare interface IRoom {
   energyAvailable: number;
   energyCapacityAvailable: number;
   memory: IRoomMemory;
-  find<U>(finding: string): U[];
+  find<U>(finding: number): U[];
   findPath(from: IPosition, to: IPosition, opts?: { ignoreCreeps?: boolean; range?: number; swampCost?: number })
   lookAt(x: number, y: number): { type: strin, [typeObj: string]: any }[];
   lookAtArea(top: number, left: number, bottom: number, right: number, asArray = false): IRoomTerrain[];
+  lookForAtArea(type: string, top: number, left: number, bottom: number, right: number, asArray = false): IRoomTerrain[];
   getPositionAt(x: number, y: number): IPosition;
   createConstructionSite(pos: IPosition, type: string): number;
 }
