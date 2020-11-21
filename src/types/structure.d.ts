@@ -1,7 +1,8 @@
-declare interface IExtension {
+declare interface IStructure {
   id: string;
   pos: IPosition;
   room: IRoom;
-  store: IStore;
   structureType: string;
+  hits: number;
+  hitsMax: number;
 }

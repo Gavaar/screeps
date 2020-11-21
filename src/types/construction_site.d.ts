@@ -1,5 +1,4 @@
-declare interface IConstructionSite {
-  id: string;
-  pos: IPosition;
-  structureType: string;
+declare interface IConstructionSite extends IStructure {
+  progress: number;
+  progressTotal: number;
 }

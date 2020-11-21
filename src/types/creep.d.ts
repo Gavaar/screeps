@@ -6,6 +6,7 @@ declare interface ICreep<T> {
   ticksToLive: number;
   store: IStore;
   build(target: ICounstructionSite): number;
+  repair(target: IStructure): number;
   harvest(target: ISource): number;
   transfer(target: ICreep | ISpawn, resourceType: string): number;
   withdraw(target: ICreep | ISpawn, resourceType: string): number;
@@ -23,14 +24,14 @@ declare interface ICreepMemory {
   type: CreepType;
 }
 
-declare interface ICRefillerMemory {
-  target: string;
-  state: 'harvesting' | 'transferring';
-}
-
 declare interface ICMinerMemory extends ICreepMemory {
   miningSite: string;
   miningPos?: IPosition;
+}
+
+declare interface ICRefillerMemory extends ICMinerMemory {
+  target: string;
+  state: 'harvesting' | 'transferring';
 }
 
 declare interface ICCollectorMemory extends ICreepMemory {

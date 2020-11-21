@@ -1,12 +1,14 @@
 import { nameService } from '@common/name_creator.service';
 import { CreepType } from '@creeps/creep.interface';
 import { creepService } from '@creeps/creep.service';
+import { controllerService } from '@rooms/controller/controller.service';
 import { AbstractSpawn } from './_spawn.abstract';
 
 class Spawn extends AbstractSpawn {
   run(): void {
     if (!Object.values(Game.creeps).length) {
-      return this.spawnCreep(CreepType.Miner);
+      this.recalculateRoomValues();
+      return this.spawnCreep(CreepType.Refiller);
     }
 
     const capacityAvailable = this.room.energyCapacityAvailable;
@@ -15,6 +17,7 @@ class Spawn extends AbstractSpawn {
       case 2:
         if (this.room.memory.latestCapacity !== capacityAvailable) this.recalculateRoomValues()
       default:
+        if (this.ctrlLevel !== this.room.memory.latestCtrlLevel) this.recalculateRoomValues();
         if (this.room.energyAvailable === capacityAvailable) {
           const type = creepService.nextRequiredCreep(this.room, this.ctrlLevel);
           if (type) this.spawnCreep(type);
@@ -34,10 +37,16 @@ class Spawn extends AbstractSpawn {
   }
 
   private recalculateRoomValues() {
-    delete this.room.memory.creepCapacity;
-    this.room.memory.latestCapacity = this.room.energyCapacityAvailable;
-    creepService.creepCapacity(this.room);
-    Object.values(Game.creeps).map((c: ICreep<any>) => this.room.memory.currentCreeps[c.memory.type] += 1);
+    const latestCapacity = this.room.energyCapacityAvailable;
+    const latestCtrlLevel = controllerService.getCustomCtrlLevel(this.room);
+    const creepCapacity = creepService.creepCapacity(this.room);
+    const currentCreeps = Object.values(Game.creeps).reduce((current, c: ICreep<any>) => {
+      current[c.memory.type] += 1;
+      return current;
+    }, { miner: 0, collector: 0, builder: 0, upgrader: 0, refiller: 0 });
+    const sources = this.room.memory.sources;
+
+    this.room.memory = { latestCtrlLevel, latestCapacity, creepCapacity, currentCreeps, sources };
   }
 }
 

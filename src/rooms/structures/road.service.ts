@@ -3,17 +3,12 @@ import { storageService } from './storage.service';
 
 class RoadService {
   setRoadSites(room: IRoom, maxSitesAtATime = 10): void {
-    let paths = energySourceService.getPathFromStoresToSources(room)
-      .filter(p => {
-        return room.getPositionAt(p.x, p.y)
-          .lookFor<IRoad>(LOOK_STRUCTURES)
-          .find(s => s.structureType === STRUCTURE_ROAD) == null;
-      });
-    if (!paths.length) paths = this.getPathFromStoresToController(room);
+    let paths = this.getPathsWithoutRoads(energySourceService.getPathFromStoresToSources(room));
 
-    const noRoads = this.getPathsWithoutRoads(paths);
-    noRoads.length = maxSitesAtATime;
-    noRoads.forEach(pos => room.createConstructionSite(pos, STRUCTURE_ROAD));
+    if (!paths.length) paths = this.getPathsWithoutRoads(this.getPathFromStoresToController(room));
+
+    paths.length = maxSitesAtATime;
+    paths.forEach(pos => room.createConstructionSite(pos, STRUCTURE_ROAD));
   }
 
   private getPathsWithoutRoads(paths: IPosition[]) {

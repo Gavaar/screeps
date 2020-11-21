@@ -18,4 +18,5 @@ declare interface IRoomMemory {
   creepCapacity: RequiredCreeps;
   currentCreeps: RequiredCreeps;
   latestCapacity: number;
+  latestCtrlLevel: number;
 }

@@ -1,4 +1,5 @@
 import { CreepType } from '@creeps/creep.interface';
+import { storageService } from '@rooms/structures/storage.service';
 import { spawnService } from '@spawns/spawn.service';
 
 class EnergySourceService {
@@ -29,12 +30,12 @@ class EnergySourceService {
       .sort((sa, sb) => sb.amount - sa.amount);
   }
 
-  getPathFromStoresToSources(room: IRoom) {
+  getPathFromStoresToSources(room: IRoom): IPosition[] {
     const srcPos = Object.values(this.getRoomEnergySources(room)).map(s => s.pos);
-    const spawns = spawnService.getSpawnsInRoom(room);
+    const storeObjects = storageService.getStorages(room);
     const paths: IPosition[] = [];
 
-    Object.values(spawns).forEach(sp => {
+    Object.values(storeObjects).forEach(sp => {
       srcPos.forEach(_srcPos => {
         paths.push(...room.findPath(sp.pos, _srcPos, { swampCost: 1, ignoreCreeps: true, range: 0 }));
       })

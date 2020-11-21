@@ -19,6 +19,7 @@ function Collector() {
         const withdraw = this.attemptToWithdrawEnergy(target);
 
         if (withdraw === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
+        if (withdraw === ERR_NOT_ENOUGH_RESOURCES) this.memory.target = '';
         if ((withdraw === ERR_FULL || !this.store.getFreeCapacity(RESOURCE_ENERGY)) && this.toggleState) {
           this.toggleState();
         }
@@ -28,7 +29,7 @@ function Collector() {
         if (!this.memory.target) {
           const container = storageService.getContainers(this.creep.room)[0];
 
-          if (container) {
+          if (container && container.store.getUsedCapacity(RESOURCE_ENERGY)) {
             this.memory.target = container.id;
           } else {
             const dropped = this.pos.findClosestByPath(energySourceService.droppedResources(this.creep.room));

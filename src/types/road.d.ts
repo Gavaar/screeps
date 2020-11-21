@@ -1,7 +1,3 @@
-declare interface IRoad {
-  id: string;
+declare interface IRoad extends IStructure {
   ticksToDecay: number;
-  room: IRoom;
-  structureType: string;
-  pos: IPosition;
 }

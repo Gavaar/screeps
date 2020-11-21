@@ -1,6 +1,3 @@
-declare interface IContainer {
-  id: string;
+declare interface IContainer extends IStructure {
   store: IStore;
-  pos: IPosition;
-  structureType: string;
 }

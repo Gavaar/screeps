@@ -23,19 +23,19 @@ abstract class AbstractRoom {
   protected ctrlLevel: number;
 
   constructor(room: IRoom) {
-    if (!Memory.rooms || !Memory.rooms[room.name]) {
-      delete Memory.creeps;
-      delete Memory.id;
-      Memory.rooms = { [room.name]: {
-        latestCapacity: this.energyCapacityAvailable
-      } };
-      nameService.id = 0;
-    }
-
     this._room = room;
     this.spawns = spawnService.getSpawnsInRoom(room);
     this.creeps = creepService.myCreepsInRoom(room);
     this.ctrlLevel = controllerService.getCustomCtrlLevel(room);
+
+    if (!Memory.rooms || !Memory.rooms[room.name]) {
+      Memory.creeps = {};
+      Memory.id = 0;
+      Memory.rooms = { [room.name]: {
+        latestCapacity: this.energyCapacityAvailable,
+        latestCtrlLevel: this.ctrlLevel,
+      } };
+    }
   }
 
   abstract run(): void;

@@ -37,9 +37,18 @@ function Builder() {
         }
       }
 
-      private build(): void {
-        const target = this.prepareSiteToBuild();
-        const build = this.creep.build(target);
+      private getDamagedStruct() {
+        const damaged = roomService.roomStructures(this.room).filter((struct: IStructure) => {
+          return (struct.hits / struct.hitsMax) < 0.8;
+        });
+
+        this.memory.target = (this.creep.pos.findClosestByPath(damaged) || { id: '' }).id;
+        return Game.getObjectById<IConstructionSite>(this.memory.target);
+      }
+
+      protected build(): void {
+        const target = this.prepareSiteToBuild() || this.getDamagedStruct();
+        const build = this.creep[target.progressTotal ? 'build' : 'repair'](target);
 
         if (build === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
         if (build === ERR_INVALID_TARGET) this.memory.target = '';

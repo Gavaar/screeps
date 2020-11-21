@@ -6,6 +6,7 @@ import { CBuilder } from './models/creep_builder';
 import { CUpgrader } from './models/creep_upgrader';
 import { energySourceService } from '@rooms/energy_sources/energy_source.service';
 import { CRefiller } from './models/creep_refiller';
+import { controllerService } from '@rooms/controller/controller.service';
 
 const typeClassMap = {
   [CreepType.Refiller]: CRefiller,
@@ -51,6 +52,10 @@ class CreepService {
       const { type } = creep.memory as { type: CreepType };
       const creepClass = typeClassMap[type];
 
+      if (!creepClass) {
+        console.warn(`creep ${creep.name} somehow bugged`, creep.memory);
+      }
+
       creepMap[creep.name] = new creepClass(creep, creepOpts);
       return creepMap;
     }, {} as { [creepName: string]: AbstractCreep<any> })
@@ -59,35 +64,38 @@ class CreepService {
   creepCapacity(room: IRoom): RequiredCreeps {
     if (room.memory.creepCapacity) return room.memory.creepCapacity;
 
-    room.memory.currentCreeps = { miner: 0, collector: 0, builder: 0, upgrader: 0 }
+    room.memory.currentCreeps = { miner: 0, collector: 0, builder: 0, upgrader: 0, refiller: 0 };
 
     const miner = this.calculateMinersNeeded(room);
     const collector = miner;
     const builder = miner * 2;
-    const upgrader = room.controller.level;
+    const upgrader = controllerService.getCustomCtrlLevel(room);
+    const refiller = upgrader ? 0 : Object.keys(energySourceService.getRoomEnergySources(room)).length;
 
-    room.memory.creepCapacity = { miner, collector, builder, upgrader }
+    room.memory.creepCapacity = { miner, collector, builder, upgrader, refiller }
     return room.memory.creepCapacity;
   }
 
   nextRequiredCreep(room: IRoom, ctrlLevel: number): CreepType | void {
-    const { miner, collector, builder, upgrader } = this.creepCapacity(room);
+    const { miner, collector, builder, upgrader, refiller } = this.creepCapacity(room);
     const { currentCreeps } = room.memory;
 
     switch(ctrlLevel) {
+      case 4:
+      case 3:
+      case 2:
       case 1:
       case 0:
-        if (currentCreeps.miner < miner && currentCreeps.miner <= currentCreeps.builder) return CreepType.Miner;
-        else if (currentCreeps.builder < builder) return CreepType.Builder;
-        break;
-      default:
-        if (currentCreeps.miner > currentCreeps.collector && currentCreeps.collector < collector) {
-          return CreepType.Collector;
-        } else if (currentCreeps.miner < miner) {
-          return CreepType.Miner;
-        } else if (currentCreeps.builder < builder) {
+        if (currentCreeps.refiller < refiller) return CreepType.Refiller;
+        if ((currentCreeps.miner + currentCreeps.refiller) < miner &&
+            currentCreeps.miner <= currentCreeps.builder) return CreepType.Miner;
+        if (currentCreeps.builder < builder &&
+          (currentCreeps.builder <= collector || currentCreeps.collector === collector)) {
           return CreepType.Builder;
-        } else if (currentCreeps.upgrader < upgrader) {
+        }
+        if (currentCreeps.collector < collector) return CreepType.Collector;
+      default:
+        if (currentCreeps.upgrader < upgrader) {
           return CreepType.Upgrader;
         }
       break;

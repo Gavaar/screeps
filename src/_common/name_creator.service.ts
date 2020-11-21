@@ -8,7 +8,7 @@ class NameCreatorService {
   id = Memory.id || 0;
 
   createName(): string {
-    Memory.id = this.id + 1;
+    Memory.id = this.id >= 200 ? 0 : (this.id + 1);
     return `${getName()}_${this.id}`;
   }
 }

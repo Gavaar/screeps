@@ -17,6 +17,7 @@ function Harvester() {
 
       harvest() {
         const src = this.getHarvestSrc();
+        if (!src) return;
         const correctPos = this.isInHarvestPosition(src);
 
         if (correctPos) {
