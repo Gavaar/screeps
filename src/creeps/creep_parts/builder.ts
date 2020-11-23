@@ -30,16 +30,20 @@ function Builder() {
 
       private setBuildingSites(): void {
         switch (this.ctrlLevel) {
+          case 3:
+            roomService.setTowers(this.creep.room);
           case 2:
             storageService.setExtension(this.creep.room);
+            roomService.setRamparts(this.creep.room);
           default:
             roadService.setRoadSites(this.creep.room);
         }
       }
 
-      private getDamagedStruct() {
+      private getDamagedStruct(hpTreshold = 0.8) {
         const damaged = roomService.roomStructures(this.room).filter((struct: IStructure) => {
-          return (struct.hits / struct.hitsMax) < 0.8;
+          if (struct.structureType === STRUCTURE_WALL) return false;
+          return (struct.hits / struct.hitsMax) < hpTreshold;
         });
 
         this.memory.target = (this.creep.pos.findClosestByPath(damaged) || { id: '' }).id;
@@ -47,10 +51,12 @@ function Builder() {
       }
 
       protected build(): void {
-        const target = this.prepareSiteToBuild() || this.getDamagedStruct();
+        const target = this.getDamagedStruct(0.05) || this.prepareSiteToBuild() || this.getDamagedStruct();
+        if (!target) return;
         const build = this.creep[target.progressTotal ? 'build' : 'repair'](target);
+        this.creep.say(`${target.progressTotal ? '🔨' : '🧰'}`, true);
 
-        if (build === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
+        if (build === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: this.visualizePathStyle });
         if (build === ERR_INVALID_TARGET) this.memory.target = '';
         if ((build === ERR_NOT_ENOUGH_RESOURCES || !this.store.getUsedCapacity()) && this.toggleState) {
           this.toggleState();

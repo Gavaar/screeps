@@ -30,11 +30,11 @@ abstract class AbstractRoom {
 
     if (!Memory.rooms || !Memory.rooms[room.name]) {
       Memory.creeps = {};
-      Memory.id = 0;
+      Memory.constants = { id: 0 };
       Memory.rooms = { [room.name]: {
         latestCapacity: this.energyCapacityAvailable,
         latestCtrlLevel: this.ctrlLevel,
-      } };
+      } as IRoomMemory } ;
     }
   }
 

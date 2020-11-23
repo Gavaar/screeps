@@ -5,8 +5,18 @@ interface CreepOptions {
   name: string;
 }
 
+interface VisualOptions {
+  fill: string;
+  stroke: string;
+  lineStyle: string;
+  strokeWidth: number;
+  opacity: number;
+}
+
+// tslint:disable: no-console
 abstract class AbstractCreep<T> {
   name: string;
+  visualizePathStyle = {} as Partial<VisualOptions>;
 
   get memory(): T {
     return this.creep.memory;
@@ -33,19 +43,19 @@ abstract class AbstractCreep<T> {
   }
 
   protected collect() {
-    console.warn(`Creep of type ${this.type} is trying to collect without the <Collector> decorator`);
+    console.log(`Creep of type ${this.type} is trying to collect without the <Collector> decorator`);
   }
   protected upgrade() {
-    console.warn(`Creep of type ${this.type} is trying to upgrade without the <Upgrader> decorator`);
+    console.log(`Creep of type ${this.type} is trying to upgrade without the <Upgrader> decorator`);
   }
   protected build() {
-    console.warn(`Creep of type ${this.type} is trying to build without the <Builder> decorator`);
+    console.log(`Creep of type ${this.type} is trying to build without the <Builder> decorator`);
   }
   protected harvest() {
-    console.warn(`Creep of type ${this.type} is trying to harvest without the <Harvester> decorator`);
+    console.log(`Creep of type ${this.type} is trying to harvest without the <Harvester> decorator`);
   }
   protected transfer() {
-    console.warn(`Creep of type ${this.type} is trying to transfer without the <Transferrer> decorator`);
+    console.log(`Creep of type ${this.type} is trying to transfer without the <Transferrer> decorator`);
   }
 
   abstract run(): void;

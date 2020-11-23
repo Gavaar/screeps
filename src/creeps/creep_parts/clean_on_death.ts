@@ -6,6 +6,9 @@ function CleanOnDeath(onDeathFn = (creep?: any) => null as any) {
         super(...args);
         this.run = () => {
           super.run();
+          if (this.creep.ticksToLive <= 50) {
+            this.creep.say('⚰️', true);
+          }
           if (this.creep.ticksToLive === 10) {
             this.creep.room.memory.currentCreeps[this.type] -= 1;
           }

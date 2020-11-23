@@ -11,6 +11,7 @@ const onDeath = (creep: CMiner) => {
 @CleanOnDeath(onDeath)
 class CMiner extends AbstractCreep<ICMinerMemory> {
   type = CreepType.Miner;
+  visualizePathStyle = { stroke: '#ebc334', opacity: 0.4 };
 
   run() {
     this.harvest();

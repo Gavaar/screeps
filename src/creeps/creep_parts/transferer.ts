@@ -26,7 +26,10 @@ function Transferer() {
         const target = this.getStructureTarget();
         const transfer = this.creep.transfer(target, RESOURCE_ENERGY);
 
-        if (transfer === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
+        if (transfer === ERR_NOT_IN_RANGE) {
+          this.creep.moveTo(target.pos, { visualizePathStyle: this.visualizePathStyle });
+          this.creep.say('📦', true);
+        }
         if (transfer === ERR_FULL) this.creep.memory.target = '';
 
         if (!this.creep.store.getUsedCapacity(RESOURCE_ENERGY) && this.toggleState) this.toggleState();

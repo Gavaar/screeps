@@ -1,7 +1,12 @@
 // creep parts
-declare const MOVE: string;
-declare const WORK: string;
-declare const CARRY: string;
+declare const MOVE: 'move';
+declare const WORK: 'work';
+declare const CARRY: 'carry';
+declare const ATTACK: 'attack';
+declare const RANGED_ATTACK: 'ranged_attack';
+declare const TOUGH: 'tough';
+declare const HEAL: 'heal';
+declare const CLAIM: 'claim';
 
 // find constants
 declare const FIND_EXIT_TOP: 1;

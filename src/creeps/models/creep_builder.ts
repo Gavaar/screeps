@@ -9,6 +9,7 @@ import { AbstractCreep, CreepOptions } from './_creep.abstract';
 @CleanOnDeath()
 class CBuilder extends AbstractCreep<ICBuilderMemory> {
   type = CreepType.Builder;
+  visualizePathStyle = { stroke: '#d91c1c', opacity: 0.4 };
 
   constructor(creep: ICreep<ICBuilderMemory>, opts: CreepOptions) {
     super(creep, opts);

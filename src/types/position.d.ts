@@ -10,5 +10,6 @@ declare interface IRoomTerrain {
   x: number;
   y: number;
   type: string;
+  terrain: 'wall' | 'swamp' | 'plain';
   [extra: string]: any;
 }

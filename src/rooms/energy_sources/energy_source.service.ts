@@ -44,10 +44,12 @@ class EnergySourceService {
     return paths.map(({ x, y }) => room.getPositionAt(x, y));
   }
 
-  findFreeContainerInSource(src: ISource): IPosition {
+  findFreeContainerInSource(src: ISource): IPosition | undefined {
     const roomTerr = this.lookAroundSrc(src).find(pos => {
       const { creep, container } = src.room.lookAt(pos.x, pos.y).reduce((t, obj) => {
-        if (obj.type === LOOK_CREEPS && obj.creep.memory.type === CreepType.Miner) t.creep = true;
+        if (obj.type === LOOK_CREEPS && (
+          obj.creep.memory.type === CreepType.Miner || obj.creep.memory.type === CreepType.Refiller
+        )) t.creep = true;
         if ((obj.type === LOOK_STRUCTURES || obj.type === LOOK_CONSTRUCTION_SITES) &&
           obj[obj.type].structureType === STRUCTURE_CONTAINER) {
           t.container = true;
@@ -59,8 +61,6 @@ class EnergySourceService {
     });
 
     if (roomTerr) return src.room.getPositionAt(roomTerr.x, roomTerr.y);
-
-    return {} as IPosition;
   }
 
   private findEnergySourcesInRoom(room: IRoom) {

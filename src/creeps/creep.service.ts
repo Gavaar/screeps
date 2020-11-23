@@ -39,10 +39,17 @@ const bodyPartMap = {
   }
 };
 
-const partPrice = {
+type BodyPart = 'work' | 'carry' | 'move' | 'attack' | 'heal' | 'ranged_attack' | 'tough' | 'claim';
+
+const PART_PRICE = {
   [WORK]: 100,
   [CARRY]: 50,
   [MOVE]: 50,
+  [ATTACK]: 80,
+  [HEAL]: 250,
+  [RANGED_ATTACK]: 150,
+  [TOUGH]: 10,
+  [CLAIM]: 600,
 };
 
 class CreepService {
@@ -50,10 +57,13 @@ class CreepService {
     return room.find<ICreep<any>>(FIND_MY_CREEPS).reduce((creepMap, creep) => {
       const creepOpts = { name: creep.name };
       const { type } = creep.memory as { type: CreepType };
-      const creepClass = typeClassMap[type];
+      if (!type) Memory.creeps[creep.name].type = creep.name.split('_')[0];
+      const creepClass = typeClassMap[type] || typeClassMap[creep.name.split('_')[0] as CreepType];
 
       if (!creepClass) {
-        console.warn(`creep ${creep.name} somehow bugged`, creep.memory);
+        // tslint:disable-next-line: no-console
+        console.log(`creep ${creep.name} somehow bugged`, creep.memory.type);
+        return creepMap;
       }
 
       creepMap[creep.name] = new creepClass(creep, creepOpts);
@@ -63,17 +73,19 @@ class CreepService {
 
   creepCapacity(room: IRoom): RequiredCreeps {
     if (room.memory.creepCapacity) return room.memory.creepCapacity;
-
     room.memory.currentCreeps = { miner: 0, collector: 0, builder: 0, upgrader: 0, refiller: 0 };
+
+    const _customCtrlLevel = controllerService.getCustomCtrlLevel(room);
 
     const miner = this.calculateMinersNeeded(room);
     const collector = miner;
-    const builder = miner * 2;
-    const upgrader = controllerService.getCustomCtrlLevel(room);
-    const refiller = upgrader ? 0 : Object.keys(energySourceService.getRoomEnergySources(room)).length;
+    const builder = miner + (_customCtrlLevel + 1);
+    const upgrader = _customCtrlLevel + 1;
+    const refiller = _customCtrlLevel ? 0 : miner;
 
-    room.memory.creepCapacity = { miner, collector, builder, upgrader, refiller }
-    return room.memory.creepCapacity;
+    const creepCapacity = { miner, collector, builder, upgrader, refiller }
+    room.memory.creepCapacity = creepCapacity;
+    return creepCapacity;
   }
 
   nextRequiredCreep(room: IRoom, ctrlLevel: number): CreepType | void {
@@ -85,27 +97,25 @@ class CreepService {
       case 3:
       case 2:
       case 1:
-      case 0:
-        if (currentCreeps.refiller < refiller) return CreepType.Refiller;
-        if ((currentCreeps.miner + currentCreeps.refiller) < miner &&
+        if ((currentCreeps.miner) < miner &&
             currentCreeps.miner <= currentCreeps.builder) return CreepType.Miner;
         if (currentCreeps.builder < builder &&
           (currentCreeps.builder <= collector || currentCreeps.collector === collector)) {
           return CreepType.Builder;
         }
         if (currentCreeps.collector < collector) return CreepType.Collector;
+      case 0:
+        if (currentCreeps.refiller < refiller) return CreepType.Refiller;
       default:
-        if (currentCreeps.upgrader < upgrader) {
-          return CreepType.Upgrader;
-        }
-      break;
+        if (currentCreeps.upgrader < upgrader) return CreepType.Upgrader;
+        break;
     }
   }
 
   bodyPartsByCapacity(type: CreepType, capacity: number): string[] {
     const affordableBody: string[] = [];
-    const addPart = (part: string) => {
-      capacity -= partPrice[part];
+    const addPart = (part: BodyPart) => {
+      capacity -= PART_PRICE[part];
       if (capacity >= 0) affordableBody.push(part);
     }
 

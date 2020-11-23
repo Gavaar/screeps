@@ -4,11 +4,12 @@ import { Transferer } from '@creeps/creep_parts/transferer';
 import { CreepType } from '../creep.interface';
 import { AbstractCreep, CreepOptions } from './_creep.abstract';
 
-@Collector()
 @Transferer()
 @CleanOnDeath()
+@Collector(false)
 class CCollector extends AbstractCreep<ICCollectorMemory> {
   type = CreepType.Collector;
+  visualizePathStyle = { stroke: '#34deeb', opacity: 0.4 };
 
   get energyStore() {
     return this.creep.store

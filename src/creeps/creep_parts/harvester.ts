@@ -19,6 +19,7 @@ function Harvester() {
         const src = this.getHarvestSrc();
         if (!src) return;
         const correctPos = this.isInHarvestPosition(src);
+        this.creep.say('⛏️', true);
 
         if (correctPos) {
           this.extractEnergy(src);
@@ -39,7 +40,7 @@ function Harvester() {
 
       private moveToHarvestPosition(src: ISource): void {
         const movePos = this.findFreeContainer(src);
-        const moved = this.creep.moveTo(movePos, { visualizePathStyle: {} });
+        const moved = this.creep.moveTo(movePos, { visualizePathStyle: this.visualizePathStyle });
         if (moved === ERR_NO_PATH || moved === ERR_INVALID_TARGET) {
           delete this.creep.memory.miningPos;
         }
@@ -47,7 +48,9 @@ function Harvester() {
 
       private findFreeContainer(src: ISource) {
         if (!this.memory.miningPos) {
-          this.memory.miningPos = energySourceService.findFreeContainerInSource(src);
+          const posToWork = energySourceService.findFreeContainerInSource(src);
+          if (!posToWork) delete this.memory.miningSite;
+          this.memory.miningPos = posToWork || {};
         }
         return this.memory.miningPos;
       }

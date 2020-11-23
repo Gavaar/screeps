@@ -9,6 +9,7 @@ import { Upgrader } from '@creeps/creep_parts/upgrader';
 @CleanOnDeath()
 class CUpgrader extends AbstractCreep<ICUpgraderMemory> {
   type = CreepType.Upgrader;
+  visualizePathStyle = { stroke: '#343aeb', opacity: 0.4 };
 
   constructor(creep: ICreep<ICUpgraderMemory>, opts: CreepOptions) {
     super(creep, opts);

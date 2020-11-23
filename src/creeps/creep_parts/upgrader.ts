@@ -16,7 +16,11 @@ function Upgrader() {
         const target = this.getController();
         const upgrade = this.creep.upgradeController(target);
 
-        if (upgrade === ERR_NOT_IN_RANGE) this.creep.moveTo(target.pos, { visualizePathStyle: {} });
+        this.creep.say('⚡', true);
+
+        if (upgrade === ERR_NOT_IN_RANGE) {
+          this.creep.moveTo(target.pos, { visualizePathStyle: this.visualizePathStyle });
+        }
         if (upgrade === ERR_NOT_ENOUGH_RESOURCES) this.toggleState();
       }
 

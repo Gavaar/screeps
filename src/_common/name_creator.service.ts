@@ -5,10 +5,10 @@ function getName(): string {
 }
 
 class NameCreatorService {
-  id = Memory.id || 0;
+  id = (Memory.constants || { id: 0 }).id;
 
   createName(): string {
-    Memory.id = this.id >= 200 ? 0 : (this.id + 1);
+    Memory.constants.id = this.id + 1;
     return `${getName()}_${this.id}`;
   }
 }

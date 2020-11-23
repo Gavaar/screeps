@@ -18,7 +18,7 @@ class StorageService {
 
   setExtension(room: IRoom): void {
     const positions = this.findExtensionPositions(room);
-    positions.map(pos => room.createConstructionSite(room.getPositionAt(pos.x, pos.y), STRUCTURE_EXTENSION));
+    positions.forEach(pos => room.createConstructionSite(room.getPositionAt(pos.x, pos.y), STRUCTURE_EXTENSION));
   }
 
   private findExtensionPositions(room: IRoom): IRoomTerrain[] {

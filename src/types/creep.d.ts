@@ -12,6 +12,7 @@ declare interface ICreep<T> {
   withdraw(target: ICreep | ISpawn, resourceType: string): number;
   pickup(target: IResource): number;
   upgradeController(target: IController): number;
+  say(message: string, public: boolean): number;
   moveTo(target: IPosition, opts?: { 
     reusePath?: number;
     serializeMemory?: boolean;
@@ -31,7 +32,7 @@ declare interface ICMinerMemory extends ICreepMemory {
 
 declare interface ICRefillerMemory extends ICMinerMemory {
   target: string;
-  state: 'harvesting' | 'transferring';
+  state: 'harvesting' | 'transferring' | 'building';
 }
 
 declare interface ICCollectorMemory extends ICreepMemory {

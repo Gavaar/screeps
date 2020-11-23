@@ -19,4 +19,6 @@ declare interface IRoomMemory {
   currentCreeps: RequiredCreeps;
   latestCapacity: number;
   latestCtrlLevel: number;
+  rampartsSet: boolean | undefined;
+  towers: number;
 }
